@@ -105,3 +105,40 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f'{self.member.full_name} - {self.date} - {self.time_in}'
+
+class Enquiry(models.Model):
+    ENQUIRY_STATUS_CHOICES = (
+        ('NEW', 'New'),
+        ('SEEN', 'Seen'),
+        ('RESOLVED', 'Resolved')
+    )
+    name = models.CharField(max_length=100)  # Name of the person making the enquiry
+    email = models.EmailField()  # Email Address for contact
+    contact_info = models.BigIntegerField()
+    message = models.TextField()  # The enquiry message 
+    created_at = models.DateTimeField(auto_now_add=True)   # Timestamp when the enquiry
+    status = models.CharField(max_length=50, choices=ENQUIRY_STATUS_CHOICES, default='NEW')
+
+    def __str__(self):
+        return f'Enquiry from {self.name} - {self.email}'
+
+class WorkoutPlan(models.Model):
+    member = models.ForeignKey(MemberProfile, on_delete=models.CASCADE,   # if member is deleted, delete workout plan
+                               related_name='workout_plans'  # Access workout plans via member.workout_plans
+                               )
+    title = models.CharField(max_length=100)  # Title of the workout plan
+    description = models.TextField(blank=True)    # Description of the workout plan
+    creation_at = models.DateTimeField(auto_now_add=True)  # TimeStamp when the workout plan
+
+    def __str__(self):
+        return f'{self.title} - created_at : {self.creation_at}'
+
+class Feedback(models.Model):
+    member = models.ForeignKey(MemberProfile, on_delete=models.CASCADE,    # if member deleted, delete feedback
+                               related_name='feedback'  # Access feedback via member.feedback
+                               )
+    message = models.TextField()   # feedback message from the user
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Feedback from {self.member.full_name} - created at: {self.created_at}'

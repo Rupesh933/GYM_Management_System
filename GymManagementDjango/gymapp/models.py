@@ -28,11 +28,11 @@ class MemberShipPlan(models.Model):
 class Trainer(models.Model):
     name = models.CharField(max_length=100)
     mobile = models.BigIntegerField()
-    specilization = models.CharField(max_length=200)
+    specialization = models.CharField(max_length=200)
     shift_timings = models.CharField(max_length=200)
 
     def __str__(self):
-        return f'{self.name} - {self.specilization}'
+        return f'{self.name} - {self.specialization}'
 
 class MemberProfile(models.Model):
     GENDER_CHOICES = (
@@ -47,15 +47,15 @@ class MemberProfile(models.Model):
     full_name = models.CharField(max_length=100)
     mobile = models.BigIntegerField()
     age = models.PositiveIntegerField(null=True, blank=True)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
     address = models.TextField(blank=True)
-    join_date = models.DateField(default=timezone.now())
-    plan = models.ForeingKey(MemberShipPlan,
-                              on_deleted=models.SET_NULL,    # if plan is deleted set to null
+    join_date = models.DateField(default=timezone.now)
+    plan = models.ForeignKey(MemberShipPlan,
+                              on_delete=models.SET_NULL,    # if plan is deleted set to null
                               null=True, blank=True)
     memberShip_start = models.DateField(null=True, blank=True)
     memberShip_end = models.DateField(null=True, blank=True)
-    trainer = models.ForeignKey(Trainer, on_delete=models.SET_NULL, null=True, blank=True related_name='member')
+    trainer = models.ForeignKey(Trainer, on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
 
     def __str__(self):
         return f'{self.full_name} - {self.user.username}'
@@ -70,10 +70,38 @@ class Equipment(models.Model):
 
 class Payment(models.Model):
     PAYMENT_MODE_CHOICES = (
-        ('CASE', 'Case'),
+        ('CASH', 'Cash'),
         ('ONLINE', 'Online')
     )
     PAYMENT_STATUS_CHOICES = (
         ('PAID', 'Paid'),
         ('PENDING', 'Pending')
     )
+    member = models.ForeignKey(MemberProfile, 
+                               on_delete=models.CASCADE,  # if member is deleted, delete payment
+                               related_name='payments',  # Access payment via member.payment
+                               null=True, blank=True
+                               )
+    plan = models.ForeignKey(MemberShipPlan, on_delete=models.SET_NULL, null=True, blank=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)  # eg: 2343.00
+    payment_date = models.DateField(default=timezone.now)
+    payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODE_CHOICES, null=True, blank=True)
+    payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default='PENDING')  # 
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f'Payment of ${self.amount} by {self.member.full_name if self.member else "No Member"}'
+
+class Attendance(models.Model):
+    member = models.ForeignKey(MemberProfile,
+                                on_delete=models.CASCADE,  # if member is deleted, delete Attendance record
+                                related_name='attendances'  # Access Attendances via member.attendances
+                               )
+    date = models.DateField(default=timezone.now)   # Date of Attendance
+    time_in = models.TimeField(null=True, blank=True)   # Time when member checked in
+
+    class Meta:
+        unique_together = ('member', 'date')    # Ensure one attendance record per member per day
+
+    def __str__(self):
+        return f'{self.member.full_name} - {self.date} - {self.time_in}'

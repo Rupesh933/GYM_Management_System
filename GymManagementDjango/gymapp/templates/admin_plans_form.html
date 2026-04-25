@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-3">
+    {% if mode == 'add' %} Add Plans {% else %} Edit Plans {% endif %}
+</h2>
+<form method="post" class="row g-3 w-75">
+    {% csrf_token %}
+    <div class="col-md-6">
+        <label class="form-label">Plan Name</label>
+    </div>
+</form>
+
+{% endblock %}

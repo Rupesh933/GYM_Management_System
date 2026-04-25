@@ -43,5 +43,43 @@ def admin_logout_view(request):
     messages.info(request, 'Logged Out successfully!!')
     return redirect('home')
 
+def admin_required(view_func):
+    # Before letting anyone access the page, check if they are logged in AND are an ADMIN user, if not redirect them to admin login page with an error message
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated or getattr(request.user, 'role', None) != 'ADMIN':  # check if user is not authenticated OR role is not ADMIN
+            messages.error(request, 'you must be an admin to access this page')
+            return redirect('admin_login')
+        return view_func(request, *args, **kwargs)  # if user is authenticated and role is ADMIN, then allow them to access the page
+    return wrapper
+
+# from django.contrib.auth.decorators import login_required
+# @login_required(login_url='admin_login')
+@admin_required
 def admin_dashboard_view(request):
     return render(request, 'admin_dashboard.html')
+
+@admin_required
+def admin_plans_list(request):
+    plans = MemberShipPlan.objects.all().order_by('duration_months')
+    return render(request, 'admin_plans_list.html', {'plans': plans})
+
+@admin_required
+def admin_plan_form(request):
+    if request.method=='POST':
+        name = request.POST.get('name')
+        duration_months = request.POST.get('duration_months')
+        fee = request.POST.get('fee')
+        description = request.POST.get('description')
+
+        if name and duration_months and fee:
+            MemberShipPlan.objects.create(
+                name=name,
+                duration_months=duration_months,
+                fee=fee,
+                description=description
+            )
+            messages.success(request, 'MemberShip plan added successfully')
+            return redirect('admin_plans_list')
+        else:
+            messages.error(request, 'Please fill in all required fields')
+        return render(request, 'admin_plans_form.html', {'mode':'add'})

@@ -1,123 +1,142 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"  />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
     <title>GYM Management System</title>
-</head>
-<body>
+  </head>
+  <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button"
+      <div class="container">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button
+          class="navbar-toggler"
+          type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent"
           aria-expanded="false"
-          aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ms-auto">
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto">
+
 
             {% if user.is_authenticated %}
-                {% if user.role == 'ADMIN' %}
-                    <li class="nav-item">
-          <a class="nav-link active"  href="">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Members</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Plans</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Trainers</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Payments</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Attendance</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Equipment</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Enquiries</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Workout palns</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Feedback</a>
-        </li>
+             {% if user.role == 'ADMIN' %}
 
-                {% elif user.role == 'MEMBER' %}
-                <li class="nav-item">
-          <a class="nav-link active"  href="">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">My Profile</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Membership</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Attendance</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Payments</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Workout Plans</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"  href="">Feedback</a>
-        </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Members</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Plans</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Trainers</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Payments</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Attendance</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Equipment</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Enquiries</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Workout palns</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Feedback</a>
+            </li>
 
-                {% endif %}
+            {% elif user.role == 'MEMBER' %}
+            
+            <li class="nav-item">
+              <a class="nav-link active" href="">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">My Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Membership</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Attendance</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Payments</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Workout Plans</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="">Feedback</a>
+            </li>
 
-                <li class="nav-item">
-          <a class="nav-link active"  href="">Logout</a>
-        </li>
+            {% endif %}
+
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'admin_logout' %}"
+                >Logout</a
+              >
+            </li>
 
             {% else %}
-        <li class="nav-item">
-          <a class="nav-link active"  href="{% url 'home' %}">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'about' %}">about</a>
-        </li>
-        <li class="nav-item">
-            <a class='nav-link' href="{% url 'admin_login' %}">Admin Login</a>
-        </li>
-        <li class="nav-item">
-            <a class='nav-link' href="">Member Login</a>
-        </li>
-        {% endif %}
-        </ul>
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'about' %}">about</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'admin_login' %}">Admin Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="">Member Login</a>
+            </li>
+            {% endif %}
+          </ul>
         </div>
-        </div>
+      </div>
+    </nav>
 
-</nav>
+    <div class="container mt-4">
+      {% if messages %} {% for message in messages %}
+      <div
+        class="alert alert-{{ message.tags }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          class="btn-close"
+          type="button"
+          data-bs-dismiss="alert"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% block content %} {% endblock content %}
+    </div>
 
-<div class="container mt-4">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button class="btn-close" type="button" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
-{% block content %}
-
-{% endblock content %}
-</div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-</body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>

@@ -28,6 +28,20 @@ def admin_login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(request, username=username, passowrd=password)
-        if user is not None and getattr(user, 'role', None):  #
-    return render(request, 'adminLogin.html')
+        user = authenticate(request, username=username, password=password)
+        if user is not None and getattr(user, 'role', None) == 'ADMIN': # Login only if user is valid AND role is ADMIN
+            login(request, user)   # log the user in using Django's built-in login function
+            messages.success(request,'Logged in successfully!')
+            return redirect('admin_dashboard')  # Redirect to admin dashboard after successful login
+        else:
+            messages.error(request, 'Invalid Credentials or not an Admin')
+    return render(request, 'adminLogin.html')  
+
+def admin_logout_view(request):
+    logout(request)
+    # or   request.session.flush()   # delete all session data
+    messages.info(request, 'Logged Out successfully!!')
+    return redirect('home')
+
+def admin_dashboard_view(request):
+    return render(request, 'admin_dashboard.html')

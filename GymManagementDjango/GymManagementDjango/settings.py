@@ -119,5 +119,5 @@ STATIC_URL = "static/"
 
 
 
-
+# Use THIS model everywhere for authentication
 AUTH_USER_MODEL = 'gymapp.User'

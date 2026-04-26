@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import * 
 
 # Create your views here.
@@ -61,6 +61,7 @@ def admin_dashboard_view(request):
 @admin_required
 def admin_plans_list(request):
     plans = MemberShipPlan.objects.all().order_by('duration_months')
+    print('plans: ', plans)
     return render(request, 'admin_plans_list.html', {'plans': plans})
 
 @admin_required
@@ -82,4 +83,36 @@ def admin_plan_form(request):
             return redirect('admin_plans_list')
         else:
             messages.error(request, 'Please fill in all required fields')
-        return render(request, 'admin_plans_form.html', {'mode':'add'})
+    return render(request, 'admin_plans_form.html', {'mode':'add'})
+
+@admin_required
+def admin_plan_edit(request, plan_id):
+    plan = MemberShipPlan.objects.get(id=plan_id)
+    if request.method == "POST":
+        name = request.POST.get('name')
+        duration_months = request.POST.get('duration_months')
+        fee = request.POST.get('fee')
+        description = request.POST.get('description')
+
+        if name and duration_months and fee:
+            plan.name = name
+            plan.duration_months = duration_months
+            plan.fee = fee
+            plan.description = description
+            plan.save()
+            messages.success(request, 'Membership plan updated successfully!')
+            return redirect('admin_plans_list')
+        else:
+            messages.error(request, 'Please fill in the required fields')
+
+    return render(request, 'admin_plans_form.html', {'mode': 'edit', 'plan': plan})
+
+@admin_required
+def admin_plan_delete(request, plan_id):
+    plan = get_object_or_404(MemberShipPlan, id=plan_id)
+    if request.method == 'POST':
+        plan.delete()
+        messages.success(request, 'MemberShip plan deleted successfully!')
+    else:
+        messages.error(request, 'Invalid request method')
+    return redirect('admin_plans_list')

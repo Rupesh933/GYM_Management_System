@@ -1,1 +1,42 @@
 {% extends 'base.html' %}
+
+{% block content  %}
+
+
+<div class="d-flex justify-content-between align-item-center mb-3">
+    <h2 class="">MemberShip Plans</h2>
+    <a href="{% url 'admin_plans_add' %}" class="btn btn-primary">Add New plans</a>
+</div>
+<table class="table table-bordered table-stripped w-75">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Duration</th>
+            <th>Description</th>
+            <th>Fee</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody class="">
+        {% for plan in plans %}
+        <tr>
+            <th>{{ forloop.counter }}</th>
+            <th>{{ plan.name }}</th>
+            <th>{{ plan.duration_months }}</th>
+            <th>{{ plan.description|truncatechars:50 }}</th>
+            <th>{{ plan.fee }}</th>
+            <th>
+                <a href="{% url 'admin_plan_edit' plan.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <form method="POST" action="{% url 'admin_plan_delete' plan.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Delete this plan?');">Delete</button>
+                </form>
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

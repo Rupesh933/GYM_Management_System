@@ -9,6 +9,27 @@
     {% csrf_token %}
     <div class="col-md-6">
         <label class="form-label">Plan Name</label>
+        <input type="text" class="form-control" name="name" value="{{ plan.name|default:'' }}">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Duration (months)</label>
+        <input type="text" class="form-control" name="duration_months" value="{{ plan.duration_months|default:'' }}" placeholder="1 month">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Fee</label>
+        <input type="number" class="form-control" name="fee" value="{{ plan.fee|default:'' }}" step="0.01" placeholder="0.00">
+    </div>
+    <div class="col-md-12">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" name="description" rows="3"  placeholder="Treadmill, Dumbbells">{{ plan.description|default:'' }}</textarea>
+    </div>
+    <div class="col-md-12">
+        <button type="submit" class="btn btn-primary">
+            {% if mode == 'add' %}Add Plans
+            {% else %}Update Plans
+            {% endif %}
+        </button>
+        <a href="{% url 'admin_plans_list' %}" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
 

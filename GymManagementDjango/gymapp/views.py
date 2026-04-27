@@ -183,7 +183,7 @@ def admin_member_list(request):
 
 @admin_required
 def admin_member_add(request):
-    plans = MemberProfile.objects.all().order_by('duration_months')
+    plans = MemberShipPlan.objects.all().order_by('duration_months')
     trainer = Trainer.objects.all().order_by('name')
 
     if request.method == "POST":
@@ -199,7 +199,7 @@ def admin_member_add(request):
         plan_id = request.POST.get('plan_id')
         trainer_id = request.POST.get('trainer_id')
 
-        if User.objects.filter(username=username, password=password).exists():
+        if User.objects.filter(username=username).exists():
             messages.error(request, 'username already exists! please choose a different username')
             return redirect('admin_member_add')
 
@@ -235,8 +235,8 @@ def admin_member_add(request):
 @admin_required
 def admin_member_edit(request, member_id):
     member = MemberProfile.objects.get(id=member_id)
-    trainer = Trainer.objects.all().order_by('duration_months')
-    plans = MemberProfile.objects.all().order_by('name')
+    trainer = Trainer.objects.all().order_by('name')
+    plans = MemberShipPlan.objects.all().order_by('name')
     print('member: ', member, 'trainer: ', trainer, 'plans: ',plans)
 
     if request.method == "POST":
@@ -250,7 +250,7 @@ def admin_member_edit(request, member_id):
         plan_id = request.POST.get('plan_id')
 
         # Get the plan object based on the selected plan_id from the form, if no plan is selected then set it to None
-        plan = MemberProfile.objects.get(id=plan_id) if plan_id else None
+        plan = MemberShipPlan.objects.get(id=plan_id) if plan_id else None
         trainer = Trainer.objects.get(id=trainer_id) if trainer_id else None 
 
         # Update the member profile with the new data from the form

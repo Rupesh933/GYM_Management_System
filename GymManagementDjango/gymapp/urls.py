@@ -19,4 +19,10 @@ urlpatterns = [
     path('admin_trainers_add/', admin_trainers_add, name='admin_trainers_add'),
     path('admin_trainers_edit/<int:trainer_id>/', admin_trainers_edit, name='admin_trainers_edit'),
     path('admin_trainers_delete/<int:trainer_id>/', admin_trainers_delete, name='admin_trainers_delete'),
+
+    # Member URLs
+    path('admin_member/', admin_member_list, name='admin_member_list'),
+    path('admin_member_add/', admin_member_add, name='admin_member_add'),
+    path('admin_member_edit/<int:member_id>/', admin_member_edit, name='admin_member_edit'),
+    path('admin_member_delete/<int:member_id>/', admin_member_delete, name='admin_member_delete')
 ]

@@ -175,3 +175,97 @@ def admin_trainers_delete(request, trainer_id):
     else:
         messages.error(request, 'Invalid request method')
     return redirect('admin_trainers_list')
+
+@admin_required
+def admin_member_list(request):
+    members = MemberProfile.objects.all().select_related('user', 'plan')
+    return render(request, 'admin_member_list.html', {'members':members})
+
+@admin_required
+def admin_member_add(request):
+    plans = MemberProfile.objects.all().order_by('duration_months')
+    trainer = Trainer.objects.all().order_by('name')
+
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        full_name = request.POST.get('full_name')
+        mobile = request.POST.get('mobile')
+        gender = request.POST.get('gender')
+        age = request.POST.get('age')
+        address = request.POST.get('address')
+        join_date = request.POST.get('join_date')  or timezone.now().date
+
+        plan_id = request.POST.get('plan_id')
+        trainer_id = request.POST.get('trainer_id')
+
+        if User.objects.filter(username=username, password=password).exists():
+            messages.error(request, 'username already exists! please choose a different username')
+            return redirect('admin_member_add')
+
+        # create a new user object using Django's built-in create_user method which automatically hashes the password and saves the user to the database
+        user = User.objects.create_user(    
+                username=username,
+                password=password,
+                role='MEMBER'
+                )  
+        
+        # get the plan object based on the selected plan_id from the form, if no plan is selected then set it to None
+        plan = MemberShipPlan.objects.get(id=plan_id) if plan_id else None  
+        print('plan: ',plan)
+        trainer = Trainer.objects.get(id=trainer_id) if trainer_id else None
+        print('plan: ',plan)
+
+        MemberProfile.objects.create(
+            user = user,
+            full_name=full_name,
+            mobile=mobile,
+            age=age,
+            gender=gender,
+            address=address,
+            join_date=join_date,
+            plan=plan,
+            trainer=trainer
+        )
+        messages.success(request, 'Member added successfully!!')
+        return redirect('admin_member_list')
+    return render(request, 'admin_member_add_edit.html', {'plans':plans, 'trainers':trainer, 'mode':'add'})
+
+
+@admin_required
+def admin_member_edit(request, member_id):
+    member = MemberProfile.objects.get(id=member_id)
+    trainer = Trainer.objects.all().order_by('duration_months')
+    plans = MemberProfile.objects.all().order_by('name')
+    print('member: ', member, 'trainer: ', trainer, 'plans: ',plans)
+
+    if request.method == "POST":
+        full_name = request.POST.get('full_name')
+        mobile = request.POST.get('mobile')
+        age = request.POST.get('age')
+        gender = request.POST.get('gender')
+        address = request.POST.get('address') 
+        join_date = request.POST.get('join_date')  or member.join_date
+        trainer_id = request.POST.get('trainer_id')
+        plan_id = request.POST.get('plan_id')
+
+        # Get the plan object based on the selected plan_id from the form, if no plan is selected then set it to None
+        plan = MemberProfile.objects.get(id=plan_id) if plan_id else None
+        trainer = Trainer.objects.get(id=trainer_id) if trainer_id else None 
+
+        # Update the member profile with the new data from the form
+        member.full_name = full_name
+        member.mobile = mobile
+        member.age = age
+        member.gender = gender
+        member.address = address
+        member.join_date = join_date
+        member.plan = plan
+        member.trainer = trainer
+        member.save()  # Save the updated member profile to the database
+        messages.success(request, 'Member updated successfully!!')
+        return redirect('admin_member_list')
+    return render(request, 'admin_member_add_edit.html', {'member':member, 'trainers':trainer, 'plans':plans, 'mode':'edit'})
+
+def admin_member_delete(request, member_id):
+    pass

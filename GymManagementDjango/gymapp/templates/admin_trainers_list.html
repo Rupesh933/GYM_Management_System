@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content  %}
+
+
+<div class="d-flex justify-content-between align-item-center mb-3">
+    <h2 class="">Trainers List</h2>
+    <a href="{% url 'admin_trainers_add' %}" class="btn btn-primary">Add New Trainer</a>
+</div>
+<table class="table table-bordered table-stripped w-75">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Specialization</th>
+            <th>Shift_timings</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody class="">
+        {% for trainer in trainers %}
+        <tr>
+            <th>{{ forloop.counter }}</th>
+            <th>{{ trainer.name }}</th>
+            <th>{{ trainer.mobile }}</th>
+            <th>{{ trainer.specialization }}</th>
+            <th>{{ trainer.shift_timings }}</th>
+            <th>
+                <a href="{% url 'admin_trainers_edit' trainer.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <form method="POST" action="{% url 'admin_trainers_delete' trainer.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Delete this trainer?');">Delete</button>
+                </form>
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

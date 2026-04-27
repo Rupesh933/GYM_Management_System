@@ -1,0 +1,66 @@
+{% extends 'base.html' %} {% block content %}
+
+<h2 class="mb-3">
+  {% if mode == 'add' %} Add Trainer {% else %} Edit Trainer {% endif %}
+</h2>
+<form method="post" class="row g-3 w-75">
+  {% csrf_token %}
+  <div class="col-md-6">
+    <label class="form-label">Trainer Name</label>
+    <input
+      type="text"
+      class="form-control"
+      name="name"
+      value="{{ trainer_id.name|default:'' }}"
+      placeholder="Enter Trainer Name"
+    />
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Contact Number</label>
+    <input
+      type="tel"
+      class="form-control"
+      name="mobile"
+      value="{{ trainer_id.mobile|default:'' }}"
+      placeholder="1234567890"
+      maxlength="10"
+      pattern="[0-9]{10}" 
+      inputmode="numeric"
+      oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"
+    />
+    <!-- pattern="[0-9]{10}"  This pattern ensures that only 10 digits are allowed -->
+      <!--  inputmode="numeric" This will show numeric keyboard on mobile devices -->
+     <!--  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"   This JavaScript will remove any non-digit characters and limit the input to 10 digits -->
+       
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Specialization</label>
+    <input
+      type="text"
+      class="form-control"
+      name="specialization"
+      value="{{ trainer_id.specialization|default:'' }}"
+      placeholder="senior fitness, corrective exercise"
+    />
+  </div>
+  <div class="col-md-12">
+    <label class="form-label">Shift timing</label>
+    <input
+      type="text"
+      class="form-control"
+      name="shift_timings"
+      value="{{ trainer_id.shift_timings|default:'' }}"
+      placeholder="morning, evening"
+    />
+  </div>
+  <div class="col-md-12">
+    <button type="submit" class="btn btn-primary">
+      {% if mode == 'add' %}Add Trainer {% else %}Update Trainer {% endif %}
+    </button>
+    <a href="{% url 'admin_trainers_list' %}" class="btn btn-secondary"
+      >Cancel</a
+    >
+  </div>
+</form>
+
+{% endblock %}

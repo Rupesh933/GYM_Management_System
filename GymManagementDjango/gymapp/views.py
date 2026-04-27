@@ -109,10 +109,69 @@ def admin_plan_edit(request, plan_id):
 
 @admin_required
 def admin_plan_delete(request, plan_id):
-    plan = get_object_or_404(MemberShipPlan, id=plan_id)
+    plan = get_object_or_404(MemberShipPlan, id=plan_id)  # get the plan object or return 404 if not found
     if request.method == 'POST':
         plan.delete()
         messages.success(request, 'MemberShip plan deleted successfully!')
     else:
         messages.error(request, 'Invalid request method')
     return redirect('admin_plans_list')
+
+
+@admin_required
+def admin_trainers_list(request):
+    trainers = Trainer.objects.all().order_by('name')
+    return render(request, 'admin_trainers_list.html', {'trainers':trainers})
+
+@admin_required
+def admin_trainers_add(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        mobile = request.POST.get('mobile')
+        specialization = request.POST.get('specialization')
+        shift_timings = request.POST.get('shift_timings')
+
+        if name and mobile and specialization and shift_timings:
+            Trainer.objects.create(
+                name=name.capitalize(),
+                mobile=mobile,
+                specialization=specialization.capitalize(),
+                shift_timings=shift_timings.capitalize()
+            )
+            messages.success(request, 'Trainers added successfully')
+            return redirect('admin_trainers_list')
+        else:
+            messages.error(request, 'Please fill in the all required fields')
+    return render(request, 'admin_trainers_add_edit.html', {'mode':'add'})
+
+@admin_required
+def admin_trainers_edit(request, trainer_id):
+    trainer_id = Trainer.objects.get(id=trainer_id)
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        mobile = request.POST.get('mobile')
+        specialization = request.POST.get('specialization')
+        shift_timings = request.POST.get('shift_timings')
+
+        if name and mobile and specialization and shift_timings:
+            trainer_id.name = name.capitalize()  # capitalize the first letter of each word in the trainer's name before saving to database
+            trainer_id.mobile = mobile
+            trainer_id.specialization = specialization.capitalize()  # capitalize the first letter of each word in the specialization before saving to database
+            trainer_id.shift_timings = shift_timings.capitalize() 
+            trainer_id.save()
+            messages.success(request, 'Trainer updated successfully!!')
+            return redirect('admin_trainers_list')
+        else:
+            messages.error(request, 'Please fill in the required fields')
+    return render(request, 'admin_trainers_add_edit.html', {'mode':'edit', 'trainer_id':trainer_id})  # we are passing the trainer_id object to the template so that we can pre-fill the form with the existing data of the trainer
+
+@admin_required
+def admin_trainers_delete(request, trainer_id):
+    trainer = Trainer.objects.get(id=trainer_id)
+    if request.method == 'POST':
+        trainer.delete()
+        messages.success(request, 'Trainer deleted successfully')
+        return redirect('admin_trainers_list')
+    else:
+        messages.error(request, 'Invalid request method')
+    return redirect('admin_trainers_list')

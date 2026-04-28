@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'gymapp/css/admin_member_form.css' %}">
+
+<h2 class="mb-3">
+  {% if mode == 'add' %} Add Attendance {% else %} Edit Attendance {% endif %}
+</h2>
+<form
+  id="member-form"
+  method="post"
+  class="row g-3 w-75"
+  data-check-url="{% url 'check_username' %}"
+>
+  {% csrf_token %}
+
+  <div class="col-md-6">
+    <label class="form-label">Full Name</label>
+    <input
+      type="text"
+      class="form-control"
+      id="full_name"
+      name="full_name"
+      value="{{ member.full_name|default:'' }}"
+      placeholder="Enter full name"
+      required
+      data-original="{{ member.full_name|default:'' }}"
+    />
+    <small id="username-feedback" class="form-text"></small>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Date</label>
+    <div class="password-wrapper">
+      <input
+        type="date"
+        class="form-control"
+        name="date"
+        placeholder="06-06-2024"
+        {% if mode == 'add' %}required{% endif %}
+      />
+    </div>
+  </div>
+  <br>
+  <div class="col-md-6">
+    <label class="form-label">Time in</label>
+    <input
+      type="time"
+      class="form-control"
+      name="time_in"
+      value="{{ member.time_in|default:'' }}"
+      placeholder="Enter Time in"
+    />
+  </div>
+  
+  <div class="col-md-12">
+    <button type="submit" class="btn btn-primary">
+      {% if mode == 'add' %}Add Attendance {% else %}Update Attendance {% endif %}
+    </button>
+    <a href="{% url 'admin_attendence_list' %}" class="btn btn-secondary"
+      >Cancel</a>
+  </div>
+</form>
+
+<script src="{% static 'gymapp/js/admin_member_form.js' %}"></script>
+
+{% endblock %}

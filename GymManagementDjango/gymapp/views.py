@@ -179,8 +179,12 @@ def admin_trainers_delete(request, trainer_id):
 
 @admin_required
 def admin_member_list(request):
+    search = request.GET.get('search', '')  # get the search query from the URL parameters, if no search query is provided then set it to an empty string
     members = MemberProfile.objects.all().select_related('user', 'plan')
-    return render(request, 'admin_member_list.html', {'members':members})
+
+    if search:
+        members = members.filter(full_name__icontains=search)
+    return render(request, 'admin_member_list.html', {'members':members, 'search':search})
 
 @admin_required
 def admin_member_add(request):
@@ -287,3 +291,36 @@ def check_username(request):
     username = request.GET.get('username', '').strip()
     exists = bool(username) and User.objects.filter(username=username).exists()
     return JsonResponse({'exists': exists})
+
+@admin_required
+def admin_attendance_list(request):
+    attendances = Attendance.objects.all().select_related('member')
+    return render(request, 'admin_attendance_list.html', {'attendances':attendances})
+
+@admin_required
+def admin_attendance_add(request):
+    members = MemberProfile.objects.all().order_by('full_name')
+    if request.method == 'POST':
+        member_id = request.POST.get('member_id')
+        date = request.POST.get('date')
+        time_in = request.POST.get('time_in')
+
+        if not member_id:
+            messages.error(request, 'Please select a member')
+            return redirect('admin_attendance_add')
+        members = MemberProfile.objects.get(id=member_id)
+        attendance, created = Attendance.objects.get_or_create(   # get_or_create will check if an attendance record already exists for the given member and date, if it exists then it will return that record, if not then it will create a new record with the provided data
+            member = members, date = date, time_in = time_in
+        )
+        if created:
+            messages.success(request, 'Attendance record added successfully!!')
+        else:
+            messages.info(request, 'Attendance record already exists for this member on the selected date')
+        return redirect('admin_attendance_list')
+    return render(request, 'admin_attendance_add_edit.html', {'members':members, 'mode':'add'})
+
+def admin_attendance_edit(request, attendance_id):
+    pass
+
+def admin_attendance_delete(request, attendance_id):
+    pass

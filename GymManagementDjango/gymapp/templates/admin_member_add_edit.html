@@ -1,32 +1,48 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'gymapp/css/admin_member_form.css' %}">
 
 <h2 class="mb-3">
   {% if mode == 'add' %} Add Member {% else %} Edit Member {% endif %}
 </h2>
-<form method="post" class="row g-3 w-75">
+<form
+  id="member-form"
+  method="post"
+  class="row g-3 w-75"
+  data-check-url="{% url 'check_username' %}"
+>
   {% csrf_token %}
 
-  <div class="col-md-6">                                                                                       
+  <div class="col-md-6">
     <label class="form-label">Username</label>
     <input
       type="text"
       class="form-control"
-      name="username"                                                                                          
+      id="username"
+      name="username"
       value="{{ member.user.username|default:'' }}"
-      placeholder="Enter username"                                                                             
-      required    
-    />                                                                                                         
+      placeholder="Enter username"
+      required
+      data-original="{{ member.user.username|default:'' }}"
+    />
+    <small id="username-feedback" class="form-text"></small>
   </div>
-  <div class="col-md-6">                                                                                       
+  <div class="col-md-6">
     <label class="form-label">Password</label>
-    <input
-      type="password"
-      class="form-control"
-      name="password"
-      placeholder="Enter password"                                                                             
-      {% if mode == 'add' %}required{% endif %}
-    />                                                                                                         
-  </div>          
+    <div class="password-wrapper">
+      <input
+        type="password"
+        class="form-control password-input"
+        id="password"
+        name="password"
+        placeholder="Enter password"
+        {% if mode == 'add' %}required{% endif %}
+      />
+      <i class="fa-solid fa-eye password-toggle" id="toggle-password"></i>
+    </div>
+  </div>
   <br>
   <div class="col-md-6">
     <label class="form-label">Member Name</label>
@@ -117,5 +133,7 @@
     >
   </div>
 </form>
+
+<script src="{% static 'gymapp/js/admin_member_form.js' %}"></script>
 
 {% endblock %}

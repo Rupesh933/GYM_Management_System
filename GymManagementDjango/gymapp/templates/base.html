@@ -12,6 +12,151 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
     />
     <title>GYM Management System</title>
+    <style>
+      /* Alert Messages Styling */
+      .alert-container {
+        max-width: 100%;
+        padding: 0 1rem;
+      }
+
+      .alert {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        border-left: 5px solid;
+        animation: slideIn 0.4s ease-in-out;
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Success Alert */
+      .alert-success {
+        background-color: #d1e7dd;
+        border-left-color: #198754;
+        color: #0f5132;
+      }
+
+      .alert-success .btn-close {
+        background-color: #0f5132;
+      }
+
+      /* Error/Danger Alert */
+      .alert-error,
+      .alert-danger {
+        background-color: #f8d7da;
+        border-left-color: #dc3545;
+        color: #842029;
+      }
+
+      .alert-error .btn-close,
+      .alert-danger .btn-close {
+        background-color: #842029;
+      }
+
+      /* Warning Alert */
+      .alert-warning {
+        background-color: #fff3cd;
+        border-left-color: #ffc107;
+        color: #664d03;
+      }
+
+      .alert-warning .btn-close {
+        background-color: #664d03;
+      }
+
+      /* Info Alert */
+      .alert-info {
+        background-color: #cfe2ff;
+        border-left-color: #0d6efd;
+        color: #084298;
+      }
+
+      .alert-info .btn-close {
+        background-color: #084298;
+      }
+
+      /* Close Button */
+      .btn-close {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+        padding: 0;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        flex-shrink: 0;
+        margin-left: 1rem;
+        color: inherit;
+      }
+
+      .btn-close:hover {
+        opacity: 1;
+      }
+
+      .btn-close::before {
+        content: "\\d7";
+        font-size: 1.5rem;
+        line-height: 1;
+        font-weight: bold;
+      }
+
+      /* Fade and Show Animation */
+      .alert.fade {
+        opacity: 1;
+      }
+
+      .alert.show {
+        display: flex;
+      }
+
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 576px) {
+        .alert {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+          padding: 0.75rem 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .btn-close {
+          margin-left: 0;
+          align-self: flex-end;
+          margin-top: -0.5rem;
+        }
+      }
+    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -118,19 +263,16 @@
     </nav>
 
     <div class="container mt-4">
-      {% if messages %} {% for message in messages %}
-      <div
-        class="alert alert-{{ message.tags }} alert-dismissible fade show"
-        role="alert"
-      >
-        {{ message }}
-        <button
-          class="btn-close"
-          type="button"
-          data-bs-dismiss="alert"
-        ></button>
+      {% if messages %}
+      <div class="alert-container">
+        {% for message in messages %}
+        <div class="alert fade show alert-{{ message.tags }}" role="alert">
+          <span>{{ message }}</span>
+          <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %} {% endif %}
+      {% endif %}
       
       {% block content %}
       
@@ -142,5 +284,63 @@
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
     ></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Close alert functionality
+        const closeAlerts = function() {
+          document.querySelectorAll('.btn-close').forEach(button => {
+            button.addEventListener('click', function(e) {
+              e.preventDefault();
+              const alert = this.closest('.alert');
+              if (alert) {
+                alert.style.animation = 'slideOut 0.4s ease-in-out forwards';
+                setTimeout(() => {
+                  if (alert && alert.parentElement) {
+                    alert.remove();
+                  }
+                }, 400);
+              }
+            });
+          });
+        };
+
+        // Initialize close button listeners
+        closeAlerts();
+
+        // Auto-dismiss alerts after 6 seconds
+        document.querySelectorAll('.alert').forEach(alert => {
+          const timeoutId = setTimeout(() => {
+            if (alert && alert.parentElement) {
+              alert.style.animation = 'slideOut 0.4s ease-in-out forwards';
+              setTimeout(() => {
+                if (alert && alert.parentElement) {
+                  alert.remove();
+                }
+              }, 400);
+            }
+          }, 6000);
+
+          // Clear timeout if user manually closes the alert
+          const closeBtn = alert.querySelector('.btn-close');
+          if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+              clearTimeout(timeoutId);
+            });
+          }
+        });
+      });
+    </script>
+    <style>
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+      }
+    </style>
   </body>
 </html>

@@ -24,5 +24,7 @@ urlpatterns = [
     path('admin_member/', admin_member_list, name='admin_member_list'),
     path('admin_member_add/', admin_member_add, name='admin_member_add'),
     path('admin_member_edit/<int:member_id>/', admin_member_edit, name='admin_member_edit'),
-    path('admin_member_delete/<int:member_id>/', admin_member_delete, name='admin_member_delete')
+    path('admin_member_delete/<int:member_id>/', admin_member_delete, name='admin_member_delete'),
+
+    path('check_username/', check_username, name='check_username'),
 ]

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import * 
+from django.http import JsonResponse
+from .models import *
 
 # Create your views here.
 
@@ -133,10 +134,10 @@ def admin_trainers_add(request):
 
         if name and mobile and specialization and shift_timings:
             Trainer.objects.create(
-                name=name.capitalize(),
+                name=name.title(),
                 mobile=mobile,
-                specialization=specialization.capitalize(),
-                shift_timings=shift_timings.capitalize()
+                specialization=specialization.title(),
+                shift_timings=shift_timings.title()
             )
             messages.success(request, 'Trainers added successfully')
             return redirect('admin_trainers_list')
@@ -154,10 +155,10 @@ def admin_trainers_edit(request, trainer_id):
         shift_timings = request.POST.get('shift_timings')
 
         if name and mobile and specialization and shift_timings:
-            trainer_id.name = name.capitalize()  # capitalize the first letter of each word in the trainer's name before saving to database
+            trainer_id.name = name.title()
             trainer_id.mobile = mobile
-            trainer_id.specialization = specialization.capitalize()  # capitalize the first letter of each word in the specialization before saving to database
-            trainer_id.shift_timings = shift_timings.capitalize() 
+            trainer_id.specialization = specialization.title()
+            trainer_id.shift_timings = shift_timings.title()
             trainer_id.save()
             messages.success(request, 'Trainer updated successfully!!')
             return redirect('admin_trainers_list')
@@ -267,5 +268,22 @@ def admin_member_edit(request, member_id):
         return redirect('admin_member_list')
     return render(request, 'admin_member_add_edit.html', {'member':member, 'trainers':trainer, 'plans':plans, 'mode':'edit'})
 
+@admin_required
 def admin_member_delete(request, member_id):
-    pass
+    member = get_object_or_404(MemberProfile, id=member_id)
+    if request.method == 'POST':
+        user = member.user
+        member.delete()
+        if user:
+            user.delete()
+        messages.success(request, 'Member deleted successfully')
+    else:
+        messages.error(request, 'Invalid request method')
+    return redirect('admin_member_list')
+
+
+@admin_required
+def check_username(request):
+    username = request.GET.get('username', '').strip()
+    exists = bool(username) and User.objects.filter(username=username).exists()
+    return JsonResponse({'exists': exists})

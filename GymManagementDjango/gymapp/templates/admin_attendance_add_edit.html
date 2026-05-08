@@ -1,78 +1,142 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'gymapp/css/admin_member_form.css' %}">
+<!-- Semantic UI CSS -->
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
 
-<h2 class="mb-3">
-  {% if mode == 'add' %} Add Attendance {% else %} Edit Attendance {% endif %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Semantic UI JS -->
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
+      rel="stylesheet" />
+
+<h2 class="mb-4">
+    {% if mode == 'add' %}
+        Add Attendance
+    {% else %}
+        Edit Attendance
+    {% endif %}
 </h2>
-<form
-  id="member-form"
-  method="post"
-  class="row g-3 w-75"
-  data-check-url="{% url 'check_username' %}"
->
-  {% csrf_token %}
 
-  <div class="col-md-6">
-    <label class="form-label">Full Name</label>
-    <input
-      type="text"
-      class="form-control"
-      id="full_name"
-      name="full_name"
-      value="{{ member.full_name|default:'' }}"
-      placeholder="Enter full name"
-      required
-      data-original="{{ member.full_name|default:'' }}"
-    />
-    <small id="username-feedback" class="form-text"></small>
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">Members</label>
-    <select name="members" id="members" class="form-control">
-      <option value="">Select a member</option>
-      {% for member in members %}
-        <option value="{{ member.id }}" {% if member.id == attendance.members_id %}selected{% endif %}>
-          {{ member.full_name }}
-        </option>
-      {% endfor %}
-    </select>
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">Date</label>
-    <div class="password-wrapper">
-      <input
-        type="date"
-        class="form-control"
-        name="date"
-        placeholder="06-06-2024"
-        {% if mode == 'add' %}required{% endif %}
-      />
+<form method="POST" class="row g-3 w-75">
+
+    {% csrf_token %}
+
+    <!-- MEMBER -->
+    <div class="col-md-6">
+
+    <label class="form-label">
+        Member
+    </label>
+
+    <div class="ui fluid search selection dropdown">
+
+        <input type="hidden" name="member_id">
+
+        <i class="dropdown icon"></i>
+
+        <div class="default text">
+            Select Member
+        </div>
+
+        <div class="menu">
+
+            {% for member in members %}
+
+                <div class="item"
+                     data-value="{{ member.id }}">
+
+                    {{ member.full_name }}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
     </div>
-  </div>
-  <br>
-  <div class="col-md-6">
-    <label class="form-label">Time in</label>
-    <input
-      type="time"
-      class="form-control"
-      name="time_in"
-      value="{{ member.time_in|default:'' }}"
-      placeholder="Enter Time in"
-    />
-  </div>
-  
-  <div class="col-md-12">
-    <button type="submit" class="btn btn-primary">
-      {% if mode == 'add' %}Add Attendance {% else %}Update Attendance {% endif %}
-    </button>
-    <a href="{% url 'admin_attendance_list' %}" class="btn btn-secondary"
-      >Cancel</a>
-  </div>
+
+</div>
+    <!-- DATE -->
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Date
+        </label>
+
+        <input
+            type="date"
+            class="form-control"
+            name="date"
+            value="{{ attendance.date|date:'Y-m-d' }}"
+        >
+
+    </div>
+
+    <!-- TIME -->
+    <div class="col-md-6">
+
+        <label class="form-label">
+            Time In
+        </label>
+
+        <input
+            type="time"
+            class="form-control"
+            name="time_in"
+            value="{{ attendance.time_in|time:'H:i' }}"
+        >
+
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="col-md-12">
+
+        <button type="submit" class="btn btn-primary">
+
+            {% if mode == 'add' %}
+                Add Attendance
+            {% else %}
+                Update Attendance
+            {% endif %}
+
+        </button>
+
+        <a href="{% url 'admin_attendance_list' %}"
+           class="btn btn-secondary">
+
+            Cancel
+
+        </a>
+
+    </div>
+
 </form>
 
-<script src="{% static 'gymapp/js/admin_member_form.js' %}"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- SELECT2 INIT -->
+<script>
+
+$(document).ready(function () {
+
+    $('.ui.dropdown').dropdown();
+
+});
+
+</script>
 {% endblock %}

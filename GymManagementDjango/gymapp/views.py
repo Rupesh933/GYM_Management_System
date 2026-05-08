@@ -297,20 +297,27 @@ def admin_attendance_list(request):
     attendances = Attendance.objects.all().select_related('member')
     return render(request, 'admin_attendance_list.html', {'attendances':attendances})
 
+from django.utils import timezone
 @admin_required
 def admin_attendance_add(request):
     members = MemberProfile.objects.all().order_by('full_name')
     if request.method == 'POST':
         member_id = request.POST.get('member_id')
-        date = request.POST.get('date')
-        time_in = request.POST.get('time_in')
+        print('member_id: ', member_id)
+
+        current_datetime = timezone.now()
+
+        date = request.POST.get('date') or current_datetime.date()
+        time_in = request.POST.get('time_in') or current_datetime.time()
 
         if not member_id:
             messages.error(request, 'Please select a member')
             return redirect('admin_attendance_add')
         members = MemberProfile.objects.get(id=member_id)
         attendance, created = Attendance.objects.get_or_create(   # get_or_create will check if an attendance record already exists for the given member and date, if it exists then it will return that record, if not then it will create a new record with the provided data
-            member = members, date = date, time_in = time_in
+            member = members,
+            date = date,
+            defaults={"time_in" : time_in}
         )
         if created:
             messages.success(request, 'Attendance record added successfully!!')
@@ -319,8 +326,10 @@ def admin_attendance_add(request):
         return redirect('admin_attendance_list')
     return render(request, 'admin_attendance_add_edit.html', {'members':members, 'mode':'add'})
 
+@admin_required
 def admin_attendance_edit(request, attendance_id):
-    pass
+    attendance = Attendance.objects.get(id=attendance_id)
+    
 
 def admin_attendance_delete(request, attendance_id):
     pass

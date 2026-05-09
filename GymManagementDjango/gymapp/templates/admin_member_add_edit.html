@@ -1,8 +1,6 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 
-<link rel="stylesheet" href="{% static 'gymapp/css/admin_member_form.css' %}">
+<link rel="stylesheet" href="{% static 'gymapp/css/admin_member_form.css' %}" />
 
 <h2 class="mb-3 text-center">
   {% if mode == 'add' %} Add Member {% else %} Edit Member {% endif %}
@@ -38,12 +36,18 @@
         id="password"
         name="password"
         placeholder="Enter password"
-        {% if mode == 'add' %}required{% endif %}
+        {%
+        if
+        mode=""
+        ="add"
+        %}required{%
+        endif
+        %}
       />
       <i class="fa-solid fa-eye password-toggle" id="toggle-password"></i>
     </div>
   </div>
-  <br>
+  <br />
   <div class="col-md-6">
     <label class="form-label">Member Name</label>
     <input
@@ -63,14 +67,13 @@
       value="{{ member.mobile|default:'' }}"
       placeholder="1234567890"
       maxlength="10"
-      pattern="[0-9]{10}" 
+      pattern="[0-9]{10}"
       inputmode="numeric"
       oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"
     />
     <!-- pattern="[0-9]{10}"  This pattern ensures that only 10 digits are allowed -->
-      <!--  inputmode="numeric" This will show numeric keyboard on mobile devices -->
-     <!--  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"   This JavaScript will remove any non-digit characters and limit the input to 10 digits -->
-       
+    <!--  inputmode="numeric" This will show numeric keyboard on mobile devices -->
+    <!--  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"   This JavaScript will remove any non-digit characters and limit the input to 10 digits -->
   </div>
   <div class="col-md-3">
     <label class="form-label">Age</label>
@@ -86,9 +89,45 @@
     <label class="form-label">Gender</label>
     <select name="gender" class="form-select">
       <option value="">--Select Gender--</option>
-      <option value="Male" {% if member.gender == 'Male' %}selected {% endif %}>Male</option>
-      <option value="Female" {% if member.gender == 'Female' %}selected {% endif %}>Female</option>
-      <option value="Other" {% if member.gender == 'Other' %}selected {% endif %}>Other</option>
+      <option
+        value="Male"
+        {%
+        if
+        member.gender=""
+        ="Male"
+        %}selected
+        {%
+        endif
+        %}
+      >
+        Male
+      </option>
+      <option
+        value="Female"
+        {%
+        if
+        member.gender=""
+        ="Female"
+        %}selected
+        {%
+        endif
+        %}
+      >
+        Female
+      </option>
+      <option
+        value="Other"
+        {%
+        if
+        member.gender=""
+        ="Other"
+        %}selected
+        {%
+        endif
+        %}
+      >
+        Other
+      </option>
     </select>
   </div>
   <div class="col-md-3">
@@ -103,27 +142,56 @@
   <div class="col-md-3">
     <label class="form-label">Plan</label>
     <select name="plan_id" class="form-select">
-        <option value="">--select plan--</option>
-        {% for plan in plans %}
-            <option value="{{ plan.id }}" {% if member.plan == plan %}selected{% endif %}>{{ plan.name }}</option>
-        {% endfor %}
+      <option value="">--select plan--</option>
+      {% for plan in plans %}
+      <option
+        value="{{ plan.id }}"
+        {%
+        if
+        member.plan=""
+        ="plan"
+        %}selected{%
+        endif
+        %}
+      >
+        {{ plan.name }}
+      </option>
+      {% endfor %}
     </select>
   </div>
   <div class="col-md-3">
     <label class="form-label">Trainer</label>
     <select name="trainer_id" class="form-select">
-        <option value="">--select trainer--</option>
-        {% for trainer in trainers %}
-            <option value="{{ trainer.id }}" {% if member.trainer == trainer %}selected{% endif %}>{{ trainer.name }}</option>
-        {% endfor %}
+      <option value="">--select trainer--</option>
+      {% for trainer in trainers %}
+      <option
+        value="{{ trainer.id }}"
+        {%
+        if
+        member.trainer=""
+        ="trainer"
+        %}selected{%
+        endif
+        %}
+      >
+        {{ trainer.name }}
+      </option>
+      {% endfor %}
     </select>
   </div>
 
   <div class="col-md-12">
     <label for="address" class="form-label">Address</label>
-    <textarea name="address" class="form-control" placeholder="Enter Address" rows="3">{{ member.address|default:'' }}</textarea>
+    <textarea
+      name="address"
+      class="form-control"
+      placeholder="Enter Address"
+      rows="3"
+    >
+{{ member.address|default:'' }}</textarea
+    >
   </div>
-  
+
   <div class="col-md-12">
     <button type="submit" class="btn btn-primary">
       {% if mode == 'add' %}Add Member {% else %}Update Member {% endif %}

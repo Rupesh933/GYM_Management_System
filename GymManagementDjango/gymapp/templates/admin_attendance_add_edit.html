@@ -1,120 +1,95 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} 
 {% load static %}
-
 {% block content %}
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+<link
+  href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
+  rel="stylesheet"
+/>
 
 <h2 class="mb-4">
-    {% if mode == 'add' %}
-        Add Attendance
-    {% else %}
-        Edit Attendance
-    {% endif %}
+  {% if mode == 'add' %} Add Attendance {% else %} Edit Attendance {% endif %}
 </h2>
 
 <form method="POST" class="row g-3 w-75">
+  {% csrf_token %}
 
-    {% csrf_token %}
+  <!-- MEMBER -->
+  <div class="col-md-6">
+    <label class="form-label"> Member </label>
 
-    <!-- MEMBER -->
-    <div class="col-md-6">
+    <select class="form-select member-search" name="member_id" required>
+      <option value="">Select Member</option>
 
-    <label class="form-label">
-        Member
-    </label>
+      {% for member in members %}
 
-        <select
-            class="form-select member-search"
-            name="member_id"
-            required
-        >
-            <option value="">Select Member</option>
+      <option
+        value="{{ member.id }}"
+        {%
+        if
+        attendance.member.id=""
+        ="member.id"
+        %}selected{%
+        endif
+        %}
+      >
+        {{ member.full_name }}
+      </option>
 
-            {% for member in members %}
+      {% endfor %}
+    </select>
+  </div>
+  <!-- DATE -->
+  <div class="col-md-6">
+    <label class="form-label"> Date </label>
 
-                <option
-                    value="{{ member.id }}"
-                    {% if attendance.member.id == member.id %}selected{% endif %}
-                >
+    <input
+      type="date"
+      class="form-control"
+      name="date"
+      value="{{ attendance.date|date:'Y-m-d' }}"
+    />
+  </div>
 
-                    {{ member.full_name }}
+  <!-- TIME -->
+  <div class="col-md-6">
+    <label class="form-label"> Time In </label>
 
-                </option>
+    <input
+      type="time"
+      class="form-control"
+      name="time_in"
+      value="{{ attendance.time_in|time:'H:i' }}"
+    />
+  </div>
 
-            {% endfor %}
+  <!-- BUTTONS -->
+  <div class="col-md-12">
+    <button type="submit" class="btn btn-primary">
+      {% if mode == 'add' %} Add Attendance {% else %} Update Attendance {% endif %}
+    </button>
 
-        </select>
-
-</div>
-    <!-- DATE -->
-    <div class="col-md-6">
-
-        <label class="form-label">
-            Date
-        </label>
-
-        <input
-            type="date"
-            class="form-control"
-            name="date"
-            value="{{ attendance.date|date:'Y-m-d' }}"
-        >
-
-    </div>
-
-    <!-- TIME -->
-    <div class="col-md-6">
-
-        <label class="form-label">
-            Time In
-        </label>
-
-        <input
-            type="time"
-            class="form-control"
-            name="time_in"
-            value="{{ attendance.time_in|time:'H:i' }}"
-        >
-
-    </div>
-
-    <!-- BUTTONS -->
-    <div class="col-md-12">
-
-        <button type="submit" class="btn btn-primary">
-
-            {% if mode == 'add' %}
-                Add Attendance
-            {% else %}
-                Update Attendance
-            {% endif %}
-
-        </button>
-
-        <a href="{% url 'admin_attendance_list' %}"
-           class="btn btn-secondary">
-
-            Cancel
-
-        </a>
-
-    </div>
-
+    <a href="{% url 'admin_attendance_list' %}" class="btn btn-secondary">
+      Cancel
+    </a>
+  </div>
 </form>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(function () {
-        $('.member-search').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Select Member',
-            allowClear: true,
-            width: '100%'
-        });
+  $(function () {
+    $(".member-search").select2({
+      theme: "bootstrap-5",
+      placeholder: "Select Member",
+      allowClear: true,
+      width: "100%",
     });
+  });
 </script>
 
 {% endblock %}

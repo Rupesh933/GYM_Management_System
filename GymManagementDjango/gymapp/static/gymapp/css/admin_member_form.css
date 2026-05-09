@@ -206,16 +206,22 @@ select.form-select {
   border: 1px solid #ced4da;
   box-shadow: none;
   padding: 0.3rem 0.75rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+.select2-container--bootstrap-5
+  .select2-selection--single
+  .select2-selection__rendered {
   color: #212529;
   line-height: 1.5;
   padding: 0.25rem 0;
 }
 
-.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+.select2-container--bootstrap-5
+  .select2-selection--single
+  .select2-selection__arrow {
   height: 100%;
   right: 0.75rem;
 }

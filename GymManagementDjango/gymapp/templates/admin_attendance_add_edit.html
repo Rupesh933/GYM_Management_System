@@ -3,22 +3,8 @@
 
 {% block content %}
 
-<!-- Semantic UI CSS -->
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
-
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-<!-- Semantic UI JS -->
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
-
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-      rel="stylesheet" />
-
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
-      rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
 
 <h2 class="mb-4">
     {% if mode == 'add' %}
@@ -39,32 +25,27 @@ href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
         Member
     </label>
 
-    <div class="ui fluid search selection dropdown">
-
-        <input type="hidden" name="member_id">
-
-        <i class="dropdown icon"></i>
-
-        <div class="default text">
-            Select Member
-        </div>
-
-        <div class="menu">
+        <select
+            class="form-select member-search"
+            name="member_id"
+            required
+        >
+            <option value="">Select Member</option>
 
             {% for member in members %}
 
-                <div class="item"
-                     data-value="{{ member.id }}">
+                <option
+                    value="{{ member.id }}"
+                    {% if attendance.member.id == member.id %}selected{% endif %}
+                >
 
                     {{ member.full_name }}
 
-                </div>
+                </option>
 
             {% endfor %}
 
-        </div>
-
-    </div>
+        </select>
 
 </div>
     <!-- DATE -->
@@ -123,20 +104,17 @@ href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
 
 </form>
 
-<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-<!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<!-- SELECT2 INIT -->
 <script>
-
-$(document).ready(function () {
-
-    $('.ui.dropdown').dropdown();
-
-});
-
+    $(function () {
+        $('.member-search').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Select Member',
+            allowClear: true,
+            width: '100%'
+        });
+    });
 </script>
+
 {% endblock %}

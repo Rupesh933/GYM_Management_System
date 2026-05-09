@@ -5,6 +5,8 @@ from .models import *
 # Create your views here.
 
 from django.contrib import messages
+from django.utils import timezone
+
 def home(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -294,17 +296,28 @@ def check_username(request):
 
 @admin_required
 def admin_attendance_list(request):
-    attendances = Attendance.objects.all().select_related('member')
-    return render(request, 'admin_attendance_list.html', {'attendances':attendances})
+    search_member = request.GET.get('search-member', '').strip()
+    search_date = request.GET.get('search-date', '').strip()
 
-from django.utils import timezone
+    attendances = Attendance.objects.select_related('member').order_by('-date', '-time_in')
+
+    if search_member:
+        attendances = attendances.filter(member__full_name__icontains=search_member)
+
+    if search_date:
+        attendances = attendances.filter(date=search_date)
+
+    return render(request, 'admin_attendance_list.html', {
+        'attendances': attendances,
+        'search_member': search_member,
+        'search_date': search_date,
+    })
+
 @admin_required
 def admin_attendance_add(request):
     members = MemberProfile.objects.all().order_by('full_name')
     if request.method == 'POST':
         member_id = request.POST.get('member_id')
-        print('member_id: ', member_id)
-
         current_datetime = timezone.now()
 
         date = request.POST.get('date') or current_datetime.date()
@@ -313,9 +326,9 @@ def admin_attendance_add(request):
         if not member_id:
             messages.error(request, 'Please select a member')
             return redirect('admin_attendance_add')
-        members = MemberProfile.objects.get(id=member_id)
+        member = get_object_or_404(MemberProfile, id=member_id)
         attendance, created = Attendance.objects.get_or_create(   # get_or_create will check if an attendance record already exists for the given member and date, if it exists then it will return that record, if not then it will create a new record with the provided data
-            member = members,
+            member = member,
             date = date,
             defaults={"time_in" : time_in}
         )
@@ -328,8 +341,47 @@ def admin_attendance_add(request):
 
 @admin_required
 def admin_attendance_edit(request, attendance_id):
-    attendance = Attendance.objects.get(id=attendance_id)
-    
+    attendance = get_object_or_404(Attendance, id=attendance_id)
+    members = MemberProfile.objects.all().order_by('full_name')
 
+    if request.method == 'POST':
+        member_id = request.POST.get('member_id')
+        date = request.POST.get('date')
+        time_in = request.POST.get('time_in')
+
+        if not member_id:
+            messages.error(request, 'Please select a member')
+            return redirect('admin_attendance_edit', attendance_id=attendance.id)
+
+        member = get_object_or_404(MemberProfile, id=member_id)
+        duplicate_exists = Attendance.objects.filter(
+            member=member,
+            date=date,
+        ).exclude(id=attendance.id).exists()
+
+        if duplicate_exists:
+            messages.error(request, 'Attendance record already exists for this member on the selected date')
+            return redirect('admin_attendance_edit', attendance_id=attendance.id)
+
+        attendance.member = member
+        attendance.date = date
+        attendance.time_in = time_in or None
+        attendance.save()
+        messages.success(request, 'Attendance record updated successfully!!')
+        return redirect('admin_attendance_list')
+
+    return render(request, 'admin_attendance_add_edit.html', {
+        'attendance': attendance,
+        'members': members,
+        'mode': 'edit',
+    })
+
+@admin_required
 def admin_attendance_delete(request, attendance_id):
-    pass
+    attendance = get_object_or_404(Attendance, id=attendance_id)
+    if request.method == 'POST':
+        attendance.delete()
+        messages.success(request, 'Attendance record deleted successfully')
+    else:
+        messages.error(request, 'Invalid request method')
+    return redirect('admin_attendance_list')

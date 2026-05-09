@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "gymapp"
+    "gymapp",
 ]
 
 MIDDLEWARE = [
@@ -83,13 +83,13 @@ WSGI_APPLICATION = "GymManagementDjango.wsgi.application"
 
 # TO (PostgreSQL)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'gym_management',
-        'USER': 'gymManagement',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "gym_management",
+        "USER": "gymManagement",
+        "PASSWORD": "root",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 
@@ -138,6 +138,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-
 # Use THIS model everywhere for authentication
-AUTH_USER_MODEL = 'gymapp.User'
+AUTH_USER_MODEL = "gymapp.User"

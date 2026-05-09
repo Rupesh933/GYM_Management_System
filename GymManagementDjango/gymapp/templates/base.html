@@ -175,28 +175,37 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto">
-
-
-            {% if user.is_authenticated %}
-             {% if user.role == 'ADMIN' %}
+            {% if user.is_authenticated %} {% if user.role == 'ADMIN' %}
 
             <li class="nav-item">
-              <a class="nav-link active" href="{% url 'admin_dashboard' %}">Dashboard</a>
+              <a class="nav-link active" href="{% url 'admin_dashboard' %}"
+                >Dashboard</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="{% url 'admin_member_list' %}">Members</a>
+              <a class="nav-link active" href="{% url 'admin_member_list' %}"
+                >Members</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="{% url 'admin_plans_list' %}">Plans</a>
+              <a class="nav-link active" href="{% url 'admin_plans_list' %}"
+                >Plans</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="{% url 'admin_trainers_list' %}">Trainers</a>
+              <a class="nav-link active" href="{% url 'admin_trainers_list' %}"
+                >Trainers</a
+              >
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="">Payments</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="{% url 'admin_attendance_list' %}">Attendance</a>
+              <a
+                class="nav-link active"
+                href="{% url 'admin_attendance_list' %}"
+                >Attendance</a
+              >
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="">Equipment</a>
@@ -212,7 +221,7 @@
             </li>
 
             {% elif user.role == 'MEMBER' %}
-            
+
             <li class="nav-item">
               <a class="nav-link active" href="">Dashboard</a>
             </li>
@@ -268,15 +277,16 @@
         {% for message in messages %}
         <div class="alert fade show alert-{{ message.tags }}" role="alert">
           <span>{{ message }}</span>
-          <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+          <button
+            class="btn-close"
+            type="button"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
         </div>
         {% endfor %}
       </div>
-      {% endif %}
-      
-      {% block content %}
-      
-      {% endblock content %}
+      {% endif %} {% block content %} {% endblock content %}
     </div>
 
     <script
@@ -285,15 +295,15 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         // Close alert functionality
-        const closeAlerts = function() {
-          document.querySelectorAll('.btn-close').forEach(button => {
-            button.addEventListener('click', function(e) {
+        const closeAlerts = function () {
+          document.querySelectorAll(".btn-close").forEach((button) => {
+            button.addEventListener("click", function (e) {
               e.preventDefault();
-              const alert = this.closest('.alert');
+              const alert = this.closest(".alert");
               if (alert) {
-                alert.style.animation = 'slideOut 0.4s ease-in-out forwards';
+                alert.style.animation = "slideOut 0.4s ease-in-out forwards";
                 setTimeout(() => {
                   if (alert && alert.parentElement) {
                     alert.remove();
@@ -308,10 +318,10 @@
         closeAlerts();
 
         // Auto-dismiss alerts after 6 seconds
-        document.querySelectorAll('.alert').forEach(alert => {
+        document.querySelectorAll(".alert").forEach((alert) => {
           const timeoutId = setTimeout(() => {
             if (alert && alert.parentElement) {
-              alert.style.animation = 'slideOut 0.4s ease-in-out forwards';
+              alert.style.animation = "slideOut 0.4s ease-in-out forwards";
               setTimeout(() => {
                 if (alert && alert.parentElement) {
                   alert.remove();
@@ -321,9 +331,9 @@
           }, 6000);
 
           // Clear timeout if user manually closes the alert
-          const closeBtn = alert.querySelector('.btn-close');
+          const closeBtn = alert.querySelector(".btn-close");
           if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
+            closeBtn.addEventListener("click", function () {
               clearTimeout(timeoutId);
             });
           }

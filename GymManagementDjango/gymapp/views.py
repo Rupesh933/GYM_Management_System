@@ -466,6 +466,7 @@ def admin_attendance_delete(request, attendance_id):
 @admin_required
 def admin_equipment_list(request):
     equipments = Equipment.objects.all()
+    print("equipments purchase dates: ", [eq.purchase_date for eq in equipments])
     return render(request, 'admin_equipment_list.html', {'equipments': equipments})
 
 @admin_required
@@ -496,11 +497,36 @@ def admin_equipment_add(request):
             messages.error(request, 'Please fill in all required fields')
     return render(request, 'admin_equipment_add_edit.html', {'equipment': equipment, 'mode': 'add'})
 
-def admin_equipment_edit(request, id):
-    pass
+@admin_required
+def admin_equipment_edit(request, equipment_id):
+    equipment = get_object_or_404(Equipment, id=equipment_id)
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        units = request.POST.get('units')
+        price = request.POST.get('price')
+        purchase_date = request.POST.get('purchase_date') or equipment.purchase_date
 
-def admin_equipment_delete(request, id):
-    pass
+        if name and units and price:
+            equipment.name = name
+            equipment.units = units
+            equipment.price = price
+            equipment.purchase_date = purchase_date
+            equipment.save()
+            messages.success(request, 'Equipment Updated Successfully!')
+            return redirect('admin_equipment_list')
+        else:
+            messages.error(request, 'Please fill in the all required field')
+    return render(request, 'admin_equipment_add_edit.html', {'equipment':equipment, 'mode':'edit'})
+
+@admin_required
+def admin_equipment_delete(request, equipment_id):
+    equipment = get_object_or_404(Equipment, id = equipment_id)
+    if request.method == 'GET':
+        equipment.delete()
+        messages.success(request, 'Equipment deleted successfully!')
+    else:
+        messages.error(request, 'Envalid request method')
+    return redirect('admin_equipment_list')
 
 @admin_required
 def admin_enquiry_list(request):

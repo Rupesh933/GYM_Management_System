@@ -39,7 +39,9 @@
             <th style="width: 5%">#</th>
             <th style="width: 15%">Name</th>
             <th style="width: 12%">units</th>
-            <th style="width: 8%">is_active</th>
+            <th style="width: 12%">Price</th>
+            <th style="width: 12%">Purchase Date</th>
+            <th style="width: 8%">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -49,9 +51,23 @@
             <td>{{ forloop.counter }}</td>
             <td><span class="member-name">{{ equipment.name }}</span></td>
             <td><i class="fas fa-phone"></i> {{ equipment.units }}</td>
-            <td><span class="badge badge-info">{{ equipment.is_active }}</span></td>
+            <td><span class="badge badge-info">{{ equipment.price }}</span></td>
+            <td>
+                <span class="badge bg-secondary">
+                    {{ equipment.purchase_date|date:"d M Y" }}
+                </span>
+            </td>
+            <td>
+              <a href="{% url 'admin_equipment_edit' equipment.id %}" class="btn btn-sm btn-outline-primary" title="edit equipment">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="{% url 'admin_equipment_delete' equipment.id %}" class="btn btn-sm btn-outline-danger"  onclick="return confirm('Are you sure you want to delete this equipment?');">
+                <i class="fas fa-trash" title="delete equipment"></i>
+              </a>
+            </td>
           </tr>
-          {% endfor %} {% else %}
+          {% endfor %}
+         {% else %}
           <tr>
             <td colspan="10" class="no-members">
               <i class="fas fa-inbox"></i>

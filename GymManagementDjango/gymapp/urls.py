@@ -58,8 +58,8 @@ urlpatterns = [
     # Equipment URLs
     path('admin_equipment_list', admin_equipment_list, name='admin_equipment_list'),
     path('admin_equipment_add', admin_equipment_add, name='admin_equipment_add'),
-    path('admin_equipment/<int:id>/edit/', admin_equipment_edit, name='admin_equipment_edit'),
-    path('admin_equipment/<int:id>/delete/', admin_equipment_delete, name='admin_equipment_delete'),
+    path('admin_equipment/<int:equipment_id>/edit/', admin_equipment_edit, name='admin_equipment_edit'),
+    path('admin_equipment/<int:equipment_id>/delete/', admin_equipment_delete, name='admin_equipment_delete'),
 
 
     # Enquiry URLs

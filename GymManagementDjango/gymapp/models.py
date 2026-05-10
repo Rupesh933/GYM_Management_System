@@ -8,9 +8,7 @@ from django.conf import settings  # Import settings to access AUTH_USER_MODEL
 # Create your models here.
 
 
-class User(
-    AbstractUser
-):  # username, email, password, first_name, last_name, are inherited from AbstratUser
+class User(AbstractUser):  # username, email, password, first_name, last_name, are inherited from AbstratUser
     ROLE_CHOICE = [("ADMIN", "Admin"), ("MEMBER", "Member")]
     role = models.CharField(
         max_length=20, choices=ROLE_CHOICE, default="MEMBER"
@@ -82,6 +80,8 @@ class MemberProfile(models.Model):
 class Equipment(models.Model):
     name = models.CharField(max_length=100)  # Treadmill, Dumbbells
     units = models.PositiveIntegerField(default=1)  # eg: 5 treadmill, 7 dumbbells
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    purchase_date = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(
         default=True
     )  # if removed/sold, mark as inactive instead of deleting record

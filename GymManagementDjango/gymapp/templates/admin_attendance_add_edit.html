@@ -29,14 +29,7 @@
 
       <option
         value="{{ member.id }}"
-        {%
-        if
-        attendance.member.id=""
-        ="member.id"
-        %}selected{%
-        endif
-        %}
-      >
+        {% if attendance.member.id == member.id %}selected {% endif %}>
         {{ member.full_name }}
       </option>
 

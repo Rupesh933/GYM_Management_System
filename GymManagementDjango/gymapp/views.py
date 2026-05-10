@@ -461,3 +461,63 @@ def admin_attendance_delete(request, attendance_id):
     else:
         messages.error(request, "Invalid request method")
     return redirect("admin_attendance_list")
+
+# Equipment logic
+@admin_required
+def admin_equipment_list(request):
+    equipments = Equipment.objects.all()
+    return render(request, 'admin_equipment_list.html', {'equipments': equipments})
+
+@admin_required
+def admin_equipment_add(request):
+    equipment = None
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        units = request.POST.get('units', '').strip()
+        purchase_date = request.POST.get('purchase_date', '').strip() or timezone.now().date()
+        price = request.POST.get('price', '').strip()
+
+        if name and units and purchase_date and price:
+            Equipment.objects.create(
+                name=name,
+                units=units,
+                purchase_date=purchase_date,
+                price=price
+            )
+            messages.success(request, 'Equipment added successfully!')
+            return redirect('admin_equipment_list')
+        else:
+            equipment = {
+                'name': name,
+                'units': units,
+                'purchase_date': purchase_date,
+                'price': price,
+            }
+            messages.error(request, 'Please fill in all required fields')
+    return render(request, 'admin_equipment_add_edit.html', {'equipment': equipment, 'mode': 'add'})
+
+def admin_equipment_edit(request, id):
+    pass
+
+def admin_equipment_delete(request, id):
+    pass
+
+@admin_required
+def admin_enquiry_list(request):
+    enquirys = Enquiry.objects.all().order_by('name')
+    return render(request, 'admin_enquiry_list.html', {'enquirys':enquirys})
+
+@admin_required
+def admin_enquiry_update_status(request, enquiry_id):
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        enquiry = Enquiry.objects.get(id=enquiry_id)
+
+        if status in ['NEW', 'SEEN', 'RESOLVED']:
+            enquiry.status = status
+            enquiry.save()
+            messages.success(request, 'Enquiry status updated!')
+    return redirect('admin_enquiry_list')
+
+def admin_enquiry_delete(request, enquiry_id):
+    pass

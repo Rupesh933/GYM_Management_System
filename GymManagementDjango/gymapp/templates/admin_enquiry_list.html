@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %} 
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'gymapp/css/admin_member_list.css' %}" />
+
+<div class="members-container">
+  <form method="get" class="row g-3 mb-3">
+    <div class="col-md-4">
+      <input
+        type="text"
+        name="search"
+        class="form-control"
+        placeholder="Search by name"
+        value="{{ search }}"
+      />
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-outline-primary">Search</button>
+    </div>
+  </form>
+
+  <div class="members-card">
+    <div class="members-header">
+      <div>
+        <h2><i class="fas fa-users"></i>Enquiry List</h2>
+      </div>
+      {% comment %}
+      <!-- <div class="header-actions">
+        <a href="{% url 'admin_enquiry_add' %}" class="btn-add">
+          <i class="fas fa-plus"></i> Add New Member
+        </a>
+      </div> -->
+      {% endcomment %}
+    </div>
+
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width: 5%">#</th>
+            <th style="width: 15%">Name</th>
+            <th style="width: 12%">Email</th>
+            <th style="width: 8%">contact_info</th>
+            <th style="width: 10%">Message</th>
+            <th style="width: 18%">Created_at</th>
+            <th style="width: 12%">status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if enquirys %}
+           {% for enquiry in enquirys %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><span class="member-name">{{ enquiry.name }}</span></td>
+            <td><i class="fas fa-phone"></i> {{ enquiry.email }}</td>
+            <td><span class="badge badge-info">{{ enquiry.contact_info }}</span></td>
+            <td title="{{ enquiry.message }}">{{ enquiry.message|truncatechars:50 }}</td>
+            <td>{{ enquiry.created_at|date:"d-M-Y" }}</td>
+            <td style="width: 15%;">
+              <form method='post' action="{% url 'admin_enquiry_update_status' enquiry.id %}">
+                {% csrf_token %}
+                <select name="status" id="name" class="form-select form-select-sm mb-2">
+                  <option value="NEW" {% if enquiry.status == 'NEW' %}selected{% endif %}>New</option>
+                  <option value="SEEN" {% if enquiry.status == 'SEEN' %}selected{% endif %}>Seen</option>
+                  <option value="RESOLVED" {% if enquiry.status == 'RESOLVED' %}selected{% endif %}>Resolved</option> 
+                </select>
+                <button type="submit" class="btn btn-outline-primary btn-sm w-100">Update Status</button>
+            </form>
+            </td>
+          </tr>
+          {% endfor %} {% else %}
+          <tr>
+            <td colspan="10" class="no-members">
+              <i class="fas fa-inbox"></i>
+              <p>
+                No members found.
+                <a href="{% url 'admin_enquiry_add' %}">Add one now</a>
+              </p>
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

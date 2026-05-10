@@ -54,4 +54,16 @@ urlpatterns = [
         admin_attendance_delete,
         name="admin_attendance_delete",
     ),
+
+    # Equipment URLs
+    path('admin_equipment_list', admin_equipment_list, name='admin_equipment_list'),
+    path('admin_equipment_add', admin_equipment_add, name='admin_equipment_add'),
+    path('admin_equipment/<int:id>/edit/', admin_equipment_edit, name='admin_equipment_edit'),
+    path('admin_equipment/<int:id>/delete/', admin_equipment_delete, name='admin_equipment_delete'),
+
+
+    # Enquiry URLs
+    path('admin_enquiry_list/', admin_enquiry_list, name='admin_enquiry_list'),
+    path('admin_enquiry_list/<int:enquiry_id>/update_status/', admin_enquiry_update_status, name='admin_enquiry_update_status'),
+    path('admin_enquiry_delete/<int:enquiry_id>/', admin_enquiry_delete, name='admin_enquiry_delete'),
 ]

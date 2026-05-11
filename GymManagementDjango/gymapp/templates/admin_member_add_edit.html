@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% block content %}
 
 <link rel="stylesheet" href="{% static 'gymapp/css/admin_member_form.css' %}" />
 
@@ -36,13 +38,7 @@
         id="password"
         name="password"
         placeholder="Enter password"
-        {%
-        if
-        mode=""
-        ="add"
-        %}required{%
-        endif
-        %}
+        {% if mode == "add" %}required{% endif %}
       />
       <i class="fa-solid fa-eye password-toggle" id="toggle-password"></i>
     </div>
@@ -91,40 +87,19 @@
       <option value="">--Select Gender--</option>
       <option
         value="Male"
-        {%
-        if
-        member.gender=""
-        ="Male"
-        %}selected
-        {%
-        endif
-        %}
+        {% if member.gender == "Male" %}selected {% endif %}
       >
         Male
       </option>
       <option
         value="Female"
-        {%
-        if
-        member.gender=""
-        ="Female"
-        %}selected
-        {%
-        endif
-        %}
+        {% if member.gender == "Female" %}selected {% endif %}
       >
         Female
       </option>
       <option
         value="Other"
-        {%
-        if
-        member.gender=""
-        ="Other"
-        %}selected
-        {%
-        endif
-        %}
+        {% if member.gender == "Other" %}selected{% endif %}
       >
         Other
       </option>
@@ -146,13 +121,7 @@
       {% for plan in plans %}
       <option
         value="{{ plan.id }}"
-        {%
-        if
-        member.plan=""
-        ="plan"
-        %}selected{%
-        endif
-        %}
+        {% if member.plan == plan.id %}selected{% endif %}
       >
         {{ plan.name }}
       </option>
@@ -166,16 +135,8 @@
       {% for trainer in trainers %}
       <option
         value="{{ trainer.id }}"
-        {%
-        if
-        member.trainer=""
-        ="trainer"
-        %}selected{%
-        endif
-        %}
-      >
-        {{ trainer.name }}
-      </option>
+        {% if member.trainer == trainer.id %}selected{% endif %}
+      >{{ trainer.name }}</option>
       {% endfor %}
     </select>
   </div>
@@ -187,8 +148,7 @@
       class="form-control"
       placeholder="Enter Address"
       rows="3"
-    >
-{{ member.address|default:'' }}</textarea
+    >{{ member.address|default:'' }}</textarea
     >
   </div>
 
@@ -196,9 +156,7 @@
     <button type="submit" class="btn btn-primary">
       {% if mode == 'add' %}Add Member {% else %}Update Member {% endif %}
     </button>
-    <a href="{% url 'admin_trainers_list' %}" class="btn btn-secondary"
-      >Cancel</a
-    >
+    <a href="{% url 'admin_trainers_list' %}" class="btn btn-secondary">Cancel</a>
   </div>
 </form>
 

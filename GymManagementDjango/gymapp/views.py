@@ -547,3 +547,75 @@ def admin_enquiry_update_status(request, enquiry_id):
 
 def admin_enquiry_delete(request, enquiry_id):
     pass
+
+@admin_required
+def admin_workout_plan_list(request):
+    workout_plan = WorkoutPlan.objects.select_related('member').all().order_by('-creation_at') # we are using select_related to fetch the related member data in the same query to optimize the database queries and improve performance when we access workout_plan.member.full_name in the template, and we are ordering the workout plans by creation date in descending order so that the most recent workout plans are shown first
+    # filter
+    if request.method == 'GET':
+        member_id = request.GET.get('member_id')
+        if member_id:
+            workout_plan = workout_plan.filter(member_id=member_id) 
+        members = MemberProfile.objects.all().order_by('full_name') # we are fetching all members to show in the filter dropdown in the template
+        print('members: ', [mem.full_name for mem in members])
+    return render(request, 'admin_workout_plan_list.html', {'workout_plan':workout_plan, 'members':members, 'selected_member_id': member_id})
+
+@admin_required
+def admin_workout_plan_add(request):
+    members = MemberProfile.objects.all().order_by('full_name')
+    if request.method == 'POST':
+        member_id = request.POST.get('member_id')
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        if not member_id or not title or not description:
+            messages.error(request, 'Please select member and enter title for the workout plan')
+            return redirect('admin_workout_plans_add')
+        
+        member = get_object_or_404(MemberProfile, id=member_id)
+        WorkoutPlan.objects.create(
+            member=member,
+            title=title,
+            description=description,
+        )
+        messages.success(request, 'Workout plan added successfully!')
+        return redirect('admin_workout_plan_list')
+    
+    return render(
+        request,
+        'admin_workout_plan_add_edit.html',
+        {'mode': 'add', 'members': members},
+    )
+
+@admin_required
+def admin_workout_plan_edit(request, workout_plan_id):
+    workout_plan = get_object_or_404(WorkoutPlan, id=workout_plan_id)
+    members = MemberProfile.objects.all().order_by('full_name')
+
+    if request.method == 'POST':
+        member_id = request.POST.get('member_id') or workout_plan.member.id  # if member_id is not provided in the form, then keep the existing member_id of the workout plan
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+
+        if member_id and title and description:
+            member = get_object_or_404(MemberProfile, id=member_id)
+            workout_plan.member = member
+            workout_plan.title = title
+            workout_plan.description = description
+            workout_plan.save()
+            messages.success(request, 'Workout plan updated successfully!')
+            return redirect('admin_workout_plan_list')
+        else:
+            messages.error(request, 'Please select member and enter title for the workout plan')
+            return redirect('admin_workout_plan_edit', workout_plan_id=workout_plan.id)
+    return render(request, 'admin_workout_plan_add_edit.html', {'mode': 'edit', 'workout_plan': workout_plan, 'members': members})
+
+@admin_required
+def admin_workout_plan_delete(request, workout_plan_id):
+    plan = WorkoutPlan.objects.get(id=workout_plan_id)
+    if request.method == 'POST':
+        plan.delete()
+        messages.success(request, 'Workout plan deleted successfully!')
+    else:
+        messages.error(request, 'Invalid request method')
+    return redirect('admin_workout_plan_list')

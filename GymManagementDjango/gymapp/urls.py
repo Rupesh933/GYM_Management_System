@@ -66,4 +66,10 @@ urlpatterns = [
     path('admin_enquiry_list/', admin_enquiry_list, name='admin_enquiry_list'),
     path('admin_enquiry_list/<int:enquiry_id>/update_status/', admin_enquiry_update_status, name='admin_enquiry_update_status'),
     path('admin_enquiry_delete/<int:enquiry_id>/', admin_enquiry_delete, name='admin_enquiry_delete'),
+
+    # Workout plans URLs
+    path('admin_workout_plan_list/',admin_workout_plan_list, name='admin_workout_plan_list'),
+    path('admin_workout_plans_add/', admin_workout_plan_add, name='admin_workout_plans_add'),
+    path('admin_workout_plan_edit/<int:workout_plan_id>/', admin_workout_plan_edit, name='admin_workout_plan_edit'),
+    path('admin_workout_plan_delete/<int:workout_plan_id>/', admin_workout_plan_delete, name='admin_workout_plan_delete'),
 ]

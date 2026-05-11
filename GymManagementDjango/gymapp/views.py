@@ -619,3 +619,8 @@ def admin_workout_plan_delete(request, workout_plan_id):
     else:
         messages.error(request, 'Invalid request method')
     return redirect('admin_workout_plan_list')
+
+@admin_required
+def admin_payment_list(request):
+    payments = Payment.objects.select_related('member').all().order_by('-payment_date')
+    return render(request, 'admin_payment_list.html', {'payments': payments})

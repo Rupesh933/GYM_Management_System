@@ -72,4 +72,7 @@ urlpatterns = [
     path('admin_workout_plans_add/', admin_workout_plan_add, name='admin_workout_plans_add'),
     path('admin_workout_plan_edit/<int:workout_plan_id>/', admin_workout_plan_edit, name='admin_workout_plan_edit'),
     path('admin_workout_plan_delete/<int:workout_plan_id>/', admin_workout_plan_delete, name='admin_workout_plan_delete'),
+
+    # Payment URLs
+    path('admin_payment_list/', admin_payment_list, name='admin_payment_list'),
 ]

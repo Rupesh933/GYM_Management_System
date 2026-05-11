@@ -21,7 +21,7 @@ class User(AbstractUser):  # username, email, password, first_name, last_name, a
 class MemberShipPlan(models.Model):
     name = models.CharField(max_length=100)
     duration_months = models.PositiveIntegerField()  # eg: 1, 2, 3, 6, 12 months
-    fee = models.DecimalField(max_digits=6, decimal_places=2)  # eg: 499.50
+    fee = models.DecimalField(max_digits=10, decimal_places=2)  # eg: 499.50
     description = models.TextField()
 
     def __str__(self):

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-3">
+    My workout plan / Diet plan
+</h2>
+
+{% if workout_plan %}
+<div class="row g-3">
+    {% for wp in workout_plan %}
+    <div class="col-md-6">
+        <div class="card-shadow-sm">
+            <div class="card-header bg-primary text-white">
+                {{ wp.title }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

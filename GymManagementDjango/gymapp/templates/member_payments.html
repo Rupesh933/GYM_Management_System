@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-3">My Payments</h2>
+
+{% if payment %}
+<table class="table table-bordered table-stripped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Plan</th>
+            <th>Payment Date</th>
+            <th>Mode</th>
+            <th>Status</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for pay in payment %}
+            <td>{{ forloop.counter }}</td>
+            <td>{{ pay.plan.name }}</td>
+            <td>{{ pay.payment_date }}</td>
+            <td>{{ pay.payment_mode }}</td>
+            <td>
+                {% if pay.payment_status == 'PAID' %}
+                <span class="badge bg-success">{{ pay.payment_status }}</span>
+                {% elif pay.payment_status == 'PENDING' %}
+                <span class="badge bg-warning">{{ pay.payment_status }}</span>
+                {% endif %}
+            </td>
+            <td>{{ pay.notes }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% else %}
+<p class="alert alert-warning">You have no payment records.</p>
+{% endif %}
+
+{% endblock %}

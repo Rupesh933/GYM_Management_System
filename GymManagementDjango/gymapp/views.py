@@ -6,6 +6,7 @@ from .models import *
 
 from django.contrib import messages
 from django.utils import timezone
+from functools import wraps
 
 
 def home(request):
@@ -32,9 +33,12 @@ def about(request):
 
 
 from django.contrib.auth import authenticate, login, logout
-
+from functools import wraps
 
 def admin_login_view(request):
+    if request.user.is_authenticated and getattr(request.user, "role", None) == "ADMIN":
+        return redirect("admin_dashboard")
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -63,6 +67,7 @@ def admin_logout_view(request):
 
 def admin_required(view_func):
     # Before letting anyone access the page, check if they are logged in AND are an ADMIN user, if not redirect them to admin login page with an error message
+    @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if (
             not request.user.is_authenticated
@@ -645,7 +650,7 @@ def admin_payment_list(request):
     return render(request, 'admin_payment_list.html', {'payments': payments, 'members': members, 'selected_member_id': member_id, 'status': status})
 
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timedelta
 @admin_required
 def admin_payment_add(request):
     members = MemberProfile.objects.all().order_by('full_name')
@@ -693,12 +698,12 @@ def admin_payment_add(request):
             notes=notes
         )
         if set_membership == 'on' and plan and membership_start:
-            member.plan=plan
-            member.memberShip_start = membership_start
-            membership_start = datetime.strptime(
-                membership_start,
-                '%Y-%m-%d'
-            ).date()            
+            start_date = datetime.strptime(membership_start, '%Y-%m-%d').date()
+            end_date = start_date + timedelta(days=30 * plan.duration_months)
+
+            member.plan = plan
+            member.memberShip_start = start_date
+            member.memberShip_end = end_date
             member.save()
         messages.success(request, 'Payment recorded successfully')
         return redirect('admin_payment_list')
@@ -706,6 +711,7 @@ def admin_payment_add(request):
 
 
 def member_required(view_func):
+    @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated or getattr(request.user, 'role', None) != 'MEMBER':
             messages.error(request, 'You must be member to access this page')
@@ -714,6 +720,9 @@ def member_required(view_func):
     return wrapper
 
 def member_login_view(request):
+    if request.user.is_authenticated and getattr(request.user, 'role', None) == 'MEMBER':
+        return redirect('member_dashboard')
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -740,13 +749,16 @@ from django.db.models import Sum
 @member_required
 def member_membership(request):
     member = request.user.member_profile
-    print("member: ",member)
+    print("member: ", member.plan.name)
+    print(member.memberShip_start)
+    print(member.memberShip_end)
     days_remaining = None
     total_paid = 0
     remaining = None
+    membership_status = 'No Membership'
 
     if member.memberShip_end:
-        days_remaining = (member.memberShip_end - timezone().now().date()).days()
+        days_remaining = (member.memberShip_end - timezone.now().date()).days
         if days_remaining <= 0:
             days_remaining = 0
             membership_status = 'Membership Ended'
@@ -754,16 +766,17 @@ def member_membership(request):
             membership_status = 'Active'
     if member.plan:
         agger = Payment.objects.filter(
-            member = member,
-            plan = member.plan,
-            status = 'PAID'
-        ).agg(total = Sum('amount'))
+            member=member,
+            plan=member.plan,
+            payment_status='PAID'
+        ).aggregate(total=Sum('amount'))
         print('agger initial value: ', agger)
         total_paid = agger['total'] or 0
         print('total_paid: ',total_paid)
 
         if member.plan.fee:
             remaining = float(member.plan.fee) - float(total_paid)
+    print(days_remaining)
     context = {
         'members' : member,
         'membership_status': membership_status,
@@ -772,3 +785,17 @@ def member_membership(request):
         'remaining' : remaining
     }
     return render(request, 'member_membership.html', context)
+
+
+@member_required
+def member_payment(request):
+    member_profile = MemberProfile.objects.get(user=request.user)
+    payment = Payment.objects.filter(member=member_profile).select_related('plan').order_by('-payment_date')
+    print(payment)
+    return render(request, 'member_payments.html', {'payment':payment})
+
+@member_required
+def member_workout_plans(request):
+    member_profile = MemberProfile.objects.get(user=request.user)
+    workout_plan = WorkoutPlan.objects.filter(member=member_profile).order_by('-creation_at')
+    return render(request, 'member_workout_plan.html', {'workout_plan':workout_plan})

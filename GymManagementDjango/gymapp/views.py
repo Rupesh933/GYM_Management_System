@@ -622,5 +622,67 @@ def admin_workout_plan_delete(request, workout_plan_id):
 
 @admin_required
 def admin_payment_list(request):
+    member_id = request.GET.get('member_id')
+    status = request.GET.get('status')
     payments = Payment.objects.select_related('member').all().order_by('-payment_date')
-    return render(request, 'admin_payment_list.html', {'payments': payments})
+    if member_id:
+        payments = payments.filter(member__id=member_id)
+    if status in ['PAID', 'PENDING',]:
+        payments = payments.filter(payment_status=status)
+    
+    members = MemberProfile.objects.all().order_by('full_name') # we are fetching all members to show in the filter dropdown in the template
+    return render(request, 'admin_payment_list.html', {'payments': payments, 'members': members, 'selected_member_id': member_id, 'status': status})
+
+@admin_required
+def admin_payment_add(request):
+    members = MemberProfile.objects.all().order_by('full_name')
+    plans = MemberShipPlan.objects.all().order_by('duration_months')
+    if request.method == 'POST':
+        member_id = request.POST.get('member_id')
+        plan_id = request.POST.get('plan_id')
+        amount = request.POST.get('amount')
+        status = request.POST.get('status')
+        payment_date = request.POST.get('payment_date')
+        mode = request.POST.get('mode')
+        notes = request.POST.get('notes')
+
+        set_membership = request.POST.get('set_membership')
+        membership_start = request.POST.get('membership_start')
+
+        member = MemberProfile.objects.get(id=member_id)
+        plan = MemberProfile.objects.get(id=plan_id)
+
+        if plan and plan.fee:  # check if the plan exists and has a fee
+            total_paid = Payment.objects.filter(
+                member=member,
+                plan=plan,
+                payment_status='PAID'  # only count payments whose status is PAID
+            ).aggregate(total=models.Sum('amount'))['total'] or 0
+            # calculate total amount already paid for this plan
+            # if no payment exists, set total_paid to 0
+
+            if total_paid + float(amount) > plan.fee:
+                # check if current payment makes total payment greater than plan fee
+                remaining_amount = plan.fee - total_paid
+                # calculate how much amount is still left to pay
+                messages.error(
+                    request,
+                    f'Total paid amount exceeds the plan fee of {plan.fee}. Remaining amount {remaining_amount}, please check the amount'
+                )
+                return redirect('admin_payment_add')
+        payment = Payment.objects.create(
+            member=member,
+            plan=plan,
+            amount=amount,
+            payment_status=status,
+            payment_mode = mode,
+            payment_date=payment_date,
+            notes=notes
+        )
+        if set_membership == 'on' and plan and membership_start:
+            member.plan=plan
+            member.memberShip_start = membership_start
+            member.memberShip_end = member.memberShip_start+timezone.timedelta(days=plan.duration_months*30)
+            messages.success(request, 'Payment recorded successfully')
+            return redirect('admin_payment_list')
+        return render(request, 'admin_payment_add_edit.html', {'members': members, 'plans': plans})

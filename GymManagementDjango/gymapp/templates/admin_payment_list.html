@@ -1,83 +1,115 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} 
+{% load static %} 
 {% block content %}
+<link rel="stylesheet" href="{% static 'gymapp/css/admin_member_list.css' %}" />
 
-<div class="d-flex justify-content-between align-item-center mb-3">
-    <h2 class="">Payments </h2>
-    <a href="{% url 'admin_workout_plans_add' %}" class="btn btn-primary">Add Payment</a>
-</div>
+<div class="members-container">
+  <div class="members-card">
+    <div class="members-header">
+      <div>
+        <h2>
+          <i class="fas fa-users"></i>Payments
+        </h2>
+      </div>
 
-<form method="get" class="row g-2 mb-3">
-    <div class="col-md-4">
-        <select name="member_id" class="form-select">
-            <option value="">-- All Member --</option>
-
-            {% for member in members %}
-                <option value="{{ member.id }}"
-                {% if member.id|stringformat:"s" == selected_member_id %}selected{% endif %}>
-                    {{ member.full_name }}
-                </option>
-            {% endfor %}
-        </select>
+      <div class="header-actions">
+        <a href="{% url 'admin_payment_add' %}" class="btn-add">
+          <i class="fas fa-plus"></i>
+          Add New Payment
+        </a>
+      </div>
     </div>
-    <div class="col-md-4">
-        <select name="status" id="">
-            option value="">-- All Status --</option>
-            <option value="Pending" {% if selected_status == "Pending" %}selected{% endif %}>Pending</option>
-            <option value="Completed" {% if selected_status == "Completed" %}selected{% endif %}>Completed</option>
-            <option value="Failed" {% if selected_status == "Failed" %}selected{% endif %}>Failed</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <button type="submit" class="btn btn-secondary w-100">Filter</button>
-    </div>
-</form>
 
-<div class="row g-3">
-    {% for payment in payments %}
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <span>Title: {{ payment.title }}</span>
-                    <small>Member: {{ payment.member.full_name }}</small>  <!-- Display member name in header -->
-                </div>
-
-                <div class="card-body">
-                    <p class="small text-muted mb-1">
-                        {{ payment.created_at|date:"d M Y" }}
-                    </p>
-
-                    <textarea
-                        class="form-control auto-resize"
-                        name="description"
-                    >{{ payment.description|default:"No description provided." }}</textarea>
-
-                    <form method="post" action="{% url 'admin_workout_plan_delete' wp.id %}">
-                        {% csrf_token %}
-
-                        <a href="{% url 'admin_workout_plan_edit' wp.id %}" class="btn btn-sm btn-primary mt-3">
-                            Edit
-                        </a>
-                        <button type="submit" class="btn btn-sm btn-danger mt-3">
-                            Delete
-                        </button>
-                    </form>
-                </div>
-
-            </div>
+    <!-- SEARCH FORM -->
+    <form method="GET" class="row g-3 mb-3 mt-2">
+      <div class="row g-2 align-items-end px-2">
+        <!-- Member Name Input -->
+        <div class="col-12 col-md-5 col-lg-4">
+            <label class="form-label d-md-none text-muted small">Search Member</label>
+            <input
+                type="text"
+                name="search-member"
+                class="form-control"
+                placeholder="Search by member name"
+                value="{{ search_member|default:'' }}"
+            />
         </div>
-    {% endfor %}
+
+        <!-- search by status -->
+        <div class="col-12 col-md-4 col-lg-3">
+            <label class="form-label d-md-none text-muted small">Search Status</label>
+            <select name="status" id="" class="form-control">
+                <option value="">All Status</option>
+                <option value="PAID" {% if status == 'PAID' %}selected{% endif %}>PAID</option>
+                <option value="PENDING" {% if status == 'PENDING' %}selected{% endif %}>PENDING</option>
+            </select>
+        </div>
+
+        <!-- Search Button -->
+        <div class="col-12 col-md-3 col-lg-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-search me-1"></i> Search
+            </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- TABLE -->
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Member</th>
+            <th>Plan</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Mode</th>
+            <th>Status</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% if payments %} {% for payment in payments %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ payment.member.full_name }}</td>
+            <td>{{ payment.plan.name }}</td>
+            <td>${{ payment.amount|floatformat:2 }}</td>
+            <td>{{ payment.payment_date }}</td>
+            <td>{{ payment.payment_mode }}</td>
+            <td>{{ payment.payment_status }}</td>
+            <td>{{ payment.notes }}</td>
+          </tr>
+          {% endfor %} 
+          {% else %}
+          <tr>
+            <td colspan="8" class="text-center">No Payments Found</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script>
-document.querySelectorAll('.auto-resize').forEach(textarea => {
-    textarea.style.height = textarea.scrollHeight + 'px';
 
-    textarea.addEventListener('input', () => {
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
-    });
+window.addEventListener('pageshow', function (event) {
+
+    if (
+        performance.navigation.type === 1
+    ) {
+
+        window.location.href =
+            window.location.pathname;
+
+    }
+
 });
+
 </script>
 
 {% endblock %}
+

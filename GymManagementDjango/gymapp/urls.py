@@ -75,4 +75,5 @@ urlpatterns = [
 
     # Payment URLs
     path('admin_payment_list/', admin_payment_list, name='admin_payment_list'),
+    path('admin_payment_add_edit/', admin_payment_add, name='admin_payment_add_edit'),
 ]

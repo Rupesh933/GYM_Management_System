@@ -76,4 +76,10 @@ urlpatterns = [
     # Payment URLs
     path('admin_payment_list/', admin_payment_list, name='admin_payment_list'),
     path('admin_payment_add_edit/', admin_payment_add, name='admin_payment_add_edit'),
+
+    # Member URLs
+    path('member-login/', member_login_view, name='member_login'),
+    path('member-dashboard/', member_dashboard_view, name='member_dashboard'),
+    path('member_attendance/', member_attendance_view, name='member_attendance'),
+    path('member_membership/', member_membership, name='member_membership'),
 ]

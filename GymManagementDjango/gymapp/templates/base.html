@@ -229,10 +229,10 @@
               <a class="nav-link active" href="">My Profile</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="">Membership</a>
+              <a class="nav-link active" href="{% url 'member_membership' %}">Membership</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="">Attendance</a>
+              <a class="nav-link active" href="{% url 'member_attendance' %}">Attendance</a>
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="">Payments</a>
@@ -263,7 +263,7 @@
               <a class="nav-link" href="{% url 'admin_login' %}">Admin Login</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="">Member Login</a>
+              <a class="nav-link" href="{% url 'member_login' %}">Member Login</a>
             </li>
             {% endif %}
           </ul>

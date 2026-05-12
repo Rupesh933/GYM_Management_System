@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<h3 class="mb-3">My Attendance</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Time in</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for attendance in attendances %}
+            <td>{{ forloop.counter }}</td>
+            <td>{{ attendance.date }}</td>
+            <td>{{ attendance.time_in }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+
+{% endblock %}

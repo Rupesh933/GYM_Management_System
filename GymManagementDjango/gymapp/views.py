@@ -81,7 +81,18 @@ def admin_required(view_func):
 # @login_required(login_url='admin_login')
 @admin_required
 def admin_dashboard_view(request):
-    return render(request, "admin_dashboard.html")
+    total_members = MemberProfile.objects.count()
+    active_memberships = MemberProfile.objects.filter(memberShip_end__gte=timezone.now().date()).count()
+    today_register = MemberProfile.objects.filter(join_date=timezone.now().date()).count()
+    pending_payment = Payment.objects.filter(payment_status='PENDING').count()
+    all_enquiries = Enquiry.objects.count()
+    return render(request, "admin_dashboard.html",{
+        'total_members':total_members,
+        'active_memberships':active_memberships,
+        'today_registers':today_register,
+        'pending_payments':pending_payment,
+        'all_enquiries':all_enquiries
+    })
 
 
 @admin_required
@@ -693,5 +704,71 @@ def admin_payment_add(request):
         return redirect('admin_payment_list')
     return render(request, 'admin_payment_add_edit.html', {'members': members, 'plans': plans})
 
-@admin_required
-def dashboard_view(request):
+
+def member_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated or getattr(request.user, 'role', None) != 'MEMBER':
+            messages.error(request, 'You must be member to access this page')
+            return redirect('member_login')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+def member_login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None and getattr(user, 'role', None) == 'MEMBER':
+            login(request, user)
+            messages.success(request, 'Logged in successful')
+            return redirect('member_dashboard')
+        else:
+            messages.error(request, 'Invalid Credentials or not a Member')
+    return render(request, 'member_login.html')
+
+@member_required
+def member_dashboard_view(request):
+    return render(request, 'member_dashboard.html')
+
+@member_required
+def member_attendance_view(request):
+    member_profile = MemberProfile.objects.get(user=request.user)
+    attendance = Attendance.objects.filter(member=member_profile).order_by('-date')
+    return render(request, 'member_attendance.html', {'attendances':attendance})
+
+from django.db.models import Sum
+@member_required
+def member_membership(request):
+    member = request.user.member_profile
+    print("member: ",member)
+    days_remaining = None
+    total_paid = 0
+    remaining = None
+
+    if member.memberShip_end:
+        days_remaining = (member.memberShip_end - timezone().now().date()).days()
+        if days_remaining <= 0:
+            days_remaining = 0
+            membership_status = 'Membership Ended'
+        else:
+            membership_status = 'Active'
+    if member.plan:
+        agger = Payment.objects.filter(
+            member = member,
+            plan = member.plan,
+            status = 'PAID'
+        ).agg(total = Sum('amount'))
+        print('agger initial value: ', agger)
+        total_paid = agger['total'] or 0
+        print('total_paid: ',total_paid)
+
+        if member.plan.fee:
+            remaining = float(member.plan.fee) - float(total_paid)
+    context = {
+        'members' : member,
+        'membership_status': membership_status,
+        'days_remaining':days_remaining,
+        'total_paid' : total_paid,
+        'remaining' : remaining
+    }
+    return render(request, 'member_membership.html', context)

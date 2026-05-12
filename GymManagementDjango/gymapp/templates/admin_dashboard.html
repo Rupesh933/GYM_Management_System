@@ -1,3 +1,54 @@
 {% extends 'base.html' %} {% block content %}
-<h2>Admin Dashboard</h2>
+<h2 class="mb-4">Admin Dashboard</h2>
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Members</h5>
+                <p class="fs-3">{{ total_members }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Active Members</h5>
+                <p class="fs-3">{{ active_memberships }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Today's Register</h5>
+                <p class="fs-3">{{ today_registers }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Pending Payments</h5>
+                <p class="fs-3">{{ pending_payments }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">All Enquirys</h5>
+                <p class="fs-3">{{ all_enquiries }}</p>
+            </div>
+        </div>
+    </div>
+    <hr class="my-4">
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'admin_member_list' %}" class="btn btn-outline-primary">Manage Members</a>
+        <a href="{% url 'admin_workout_plan_list' %}" class="btn btn-outline-primary">Manage Plans</a>
+        <a href="{% url 'admin_trainers_list' %}" class="btn btn-outline-primary">Manage Trainers</a>
+        <a href="{% url 'admin_payment_list' %}" class="btn btn-outline-primary">Manage Payments</a>
+        <a href="{% url 'admin_enquiry_list' %}" class="btn btn-outline-primary">Manage Enquiry</a>
+
+    </div>
+</div>
 {% endblock %}

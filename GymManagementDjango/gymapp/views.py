@@ -633,6 +633,8 @@ def admin_payment_list(request):
     members = MemberProfile.objects.all().order_by('full_name') # we are fetching all members to show in the filter dropdown in the template
     return render(request, 'admin_payment_list.html', {'payments': payments, 'members': members, 'selected_member_id': member_id, 'status': status})
 
+from decimal import Decimal
+from datetime import datetime
 @admin_required
 def admin_payment_add(request):
     members = MemberProfile.objects.all().order_by('full_name')
@@ -642,7 +644,7 @@ def admin_payment_add(request):
         plan_id = request.POST.get('plan_id')
         amount = request.POST.get('amount')
         status = request.POST.get('status')
-        payment_date = request.POST.get('payment_date')
+        payment_date = request.POST.get('payment_date') or timezone.now().date()
         mode = request.POST.get('mode')
         notes = request.POST.get('notes')
 
@@ -650,7 +652,7 @@ def admin_payment_add(request):
         membership_start = request.POST.get('membership_start')
 
         member = MemberProfile.objects.get(id=member_id)
-        plan = MemberProfile.objects.get(id=plan_id)
+        plan = MemberShipPlan.objects.get(id=plan_id)
 
         if plan and plan.fee:  # check if the plan exists and has a fee
             total_paid = Payment.objects.filter(
@@ -661,7 +663,7 @@ def admin_payment_add(request):
             # calculate total amount already paid for this plan
             # if no payment exists, set total_paid to 0
 
-            if total_paid + float(amount) > plan.fee:
+            if total_paid + Decimal(amount) > plan.fee:
                 # check if current payment makes total payment greater than plan fee
                 remaining_amount = plan.fee - total_paid
                 # calculate how much amount is still left to pay
@@ -669,7 +671,7 @@ def admin_payment_add(request):
                     request,
                     f'Total paid amount exceeds the plan fee of {plan.fee}. Remaining amount {remaining_amount}, please check the amount'
                 )
-                return redirect('admin_payment_add')
+                return redirect('admin_payment_add_edit')
         payment = Payment.objects.create(
             member=member,
             plan=plan,
@@ -682,7 +684,14 @@ def admin_payment_add(request):
         if set_membership == 'on' and plan and membership_start:
             member.plan=plan
             member.memberShip_start = membership_start
-            member.memberShip_end = member.memberShip_start+timezone.timedelta(days=plan.duration_months*30)
-            messages.success(request, 'Payment recorded successfully')
-            return redirect('admin_payment_list')
-        return render(request, 'admin_payment_add_edit.html', {'members': members, 'plans': plans})
+            membership_start = datetime.strptime(
+                membership_start,
+                '%Y-%m-%d'
+            ).date()            
+            member.save()
+        messages.success(request, 'Payment recorded successfully')
+        return redirect('admin_payment_list')
+    return render(request, 'admin_payment_add_edit.html', {'members': members, 'plans': plans})
+
+@admin_required
+def dashboard_view(request):

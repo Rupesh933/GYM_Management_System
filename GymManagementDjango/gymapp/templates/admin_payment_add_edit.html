@@ -1,0 +1,145 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'gymapp/css/admin_member_form.css' %}" />
+
+<h2 class="mb-3 text-center">
+  {% if mode == 'add' %} Record Payment {% else %} Edit Payment {% endif %}
+</h2>
+<form id="member-form" method="post" class="row g-3 w-75">
+  {% csrf_token %}
+
+  <div class="col-md-6">
+    <label class="form-label">Member</label>
+    <select name="member_id" id="" class="form-select member-search">
+      {% for member in members %}
+      <option value="{{ member.id }}">{{ member.full_name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Plans</label>
+    <select name="plan_id" id="" class="form-select member-search">
+      <option value="">No Plan</option>
+
+      {% for plan in plans %}
+      <option value="{{ plan.id }}">{{ plan.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <br />
+  <div class="col-md-3">
+    <label class="form-label">Amount</label>
+    <input
+      type="text"
+      class="form-control"
+      name="amount"
+      value="{{ payments.amount|default:'' }}"
+      placeholder="Enter Amount"
+      required
+      step="0.1"
+    />
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Payment Date</label>
+    <input
+      type="date"
+      class="form-control"
+      name="payment_date"
+      value="{{ payments.payment_date|default:'' }}"
+    />
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Payment Mode</label>
+
+    <select name="mode" class="form-select">
+      <option value="">Payment mode</option>
+
+      <option
+        value="CASH"
+        {% if payment and payment.payment_mode == "CASH" %}
+        selected
+        {% endif %}
+      >
+        Cash
+      </option>
+
+      <option
+        value="ONLINE"
+        {% if payment and payment.payment_mode == "ONLINE" %}
+        selected
+        {% endif %}
+      >
+        Online
+      </option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Status</label>
+
+    <select name="status" class="form-select">
+      <option value="">All Status</option>
+
+      <option
+        value="PAID"
+        {% if payment and payment.payment_status == "PAID" %}
+        selected
+        {% endif %}
+      >
+        Paid
+      </option>
+
+      <option
+        value="PENDING"
+        {% if payment and payment.payment_status == "PENDING" %}
+        selected
+        {% endif    %}
+      >
+        Pending
+      </option>
+    </select>
+  </div>
+  <div class="col-md-12">
+    <label class="form-label">Notes</label>
+    <textarea
+      name="notes"
+      id=""
+      class="form-control"
+      required
+      rows="2"
+      placeholder="Enter an additional notes"
+    ></textarea>
+  </div>
+  <div class="col-md-12 border rounded p-3">
+    <div class="form-check">
+      <input
+        type="checkbox"
+        class="form-check-input"
+        name="set_membership"
+        id="set_membership"
+      />
+      <label for="set_membership" class="form-check-label">
+        Also update member's membership start/end date using this plan.
+      </label>
+    </div>
+    <div class="mt-2">
+      <label class="form-label">Membership start date</label>
+      <input type="date" name="membership_start" class="form-control" />
+      <small
+        >End date will be calculated as start date + plan durations x 30
+        days(approx)</small
+      >
+    </div>
+  </div>
+  <div class="col-md-12">
+    <button class="btn btn-primary" type="submit">Save Payment</button>
+    <a href="{% url 'admin_payment_list' %}" class="btn btn-secondary"
+      >Cancel</a
+    >
+  </div>
+</form>
+
+<script src="{% static 'gymapp/js/admin_payment_form.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-3">My Profile</h2>
+
+<div class="mb-3">
+    <a href="{% url 'member_profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+    <a href="{% url 'member_profile_edit' %}" class="btn btn-warning">Change Password</a>
+</div>
+
+<table class="table table-bordered w-50">
+    <tr>
+        <th>Full Name</th>
+        <td>{{ member.full_name }}</td>
+    </tr>
+    <tr>
+        <th>Username</th>
+        <td>{{ member.user }}</td>
+    </tr>
+    <tr>
+        <th>Mobile</th>
+        <tr>{{ member.mobile }}</tr>
+    </tr>
+    <tr>
+        <th>Age</th>
+        <tr>{{ member.age }}</tr>
+    </tr>
+</table>
+{% endblock %}

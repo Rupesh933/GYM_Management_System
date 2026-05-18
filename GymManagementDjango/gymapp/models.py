@@ -179,6 +179,7 @@ class Feedback(models.Model):
         on_delete=models.CASCADE,  # if member deleted, delete feedback
         related_name="feedback",  # Access feedback via member.feedback
     )
+    subject = models.CharField(max_length=200, blank=True,)  # subject of the feedback
     message = models.TextField()  # feedback message from the user
     created_at = models.DateTimeField(auto_now_add=True)
 

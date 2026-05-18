@@ -6,17 +6,23 @@
 </h2>
 
 {% if workout_plan %}
-<div class="row g-3">
+<div class="row g-3 shadow-lg">
     {% for wp in workout_plan %}
     <div class="col-md-6">
         <div class="card-shadow-sm">
             <div class="card-header bg-primary text-white">
                 {{ wp.title }}
             </div>
+            <div class="card-body">
+                <p class="small text-muted mb-1">{{ wp.creation_at }}</p>
+                <p style="white-space: pre-line;">{{ wp.description }}</p>
+            </div>
         </div>
     </div>
     {% endfor %}
 </div>
+{% else %}
+<p class="alert alert-warning">You have no workout or diet plans assigned yet. please check back later or contact the gym.</p>
 {% endif %}
 
 {% endblock %}

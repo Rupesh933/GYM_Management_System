@@ -798,4 +798,62 @@ def member_payment(request):
 def member_workout_plans(request):
     member_profile = MemberProfile.objects.get(user=request.user)
     workout_plan = WorkoutPlan.objects.filter(member=member_profile).order_by('-creation_at')
+    print("workout_plan: ", workout_plan)
     return render(request, 'member_workout_plan.html', {'workout_plan':workout_plan})
+
+@member_required
+def member_profile(request):
+    member = request.user.member_profile
+    return render(request, 'member_profile.html', {'member':member})
+
+@member_required
+def member_profile_edit(request):
+    member = request.user.member_profile
+    if request.method == 'POST':
+        member.full_name = request.POST.get('full_name')
+        member.mobile = request.POST.get('mobile')
+        member.age = request.POST.get('age')
+        member.gender = request.POST.get('gender')
+        member.address = request.POST.get('address')
+        member.save()
+        messages.success(request, 'Profile update successfully!')
+    return render(request, 'member_profile_edit.html', {"member":member})
+
+@member_required
+def member_change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if not request.user.check_password(current_password):
+            messages.error(request, 'Current Password is incorrect')
+        if new_password != confirm_password:
+            messages.error(request, 'New Password and confirm password do not match')
+            return redirect('member_change_password')
+        request.user.set_password(new_password)
+        request.user.save()
+        messages.success(request, 'Password change successfully! please login again')
+    return render(request, 'member_change_password.html')
+
+@member_required
+def member_feedback(request):
+    member = request.user.member_profile
+    if request.method == 'POST':
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        if subject and message:
+            Feedback.objects.create(
+                member=member,
+                subject=subject,
+                message=message
+            )
+            messages.success(request, 'Feedback submitted successfully!')
+            return redirect('member_dashboard')
+        else:
+            messages.error(request, 'Please fill in all required fields')
+    return render(request, 'member_feedback.html')
+
+@member_required
+def memberdashboard_view(request):
+    return render(request, 'member_dashboard.html')
